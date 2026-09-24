@@ -1,0 +1,904 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>EU–UK Tech Job Tracker</title>
+<meta name="description" content="Track SWE, SDE, ML and AI job applications across Europe and the UK, with employer lists, job search shortcuts and visa routes.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,650&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --bg:#F3F5F8; --surface:#FFFFFF; --sunk:#E9EDF3; --ink:#141A26; --muted:#5A6477; --line:#D9DEE7;
+  --accent:#2446A6; --accent-ink:#FFFFFF; --accent-soft:#E3E9FA; --star:#E9B819;
+  --st-wishlist:#8D97AB; --st-applied:#2F6FE0; --st-screen:#7B55D6; --st-interview:#D98A12; --st-offer:#1E9E6A; --st-closed:#C2474B;
+  --good:#16865A; --good-soft:#DDF3E9; --warn:#A96A06; --warn-soft:#FBEFD6; --bad:#B8383D; --bad-soft:#F9E1E2;
+  --shadow:0 1px 2px rgba(20,26,38,.06),0 2px 8px rgba(20,26,38,.05);
+  --f-display:"Bricolage Grotesque","Avenir Next","Segoe UI",system-ui,sans-serif;
+  --f-body:"IBM Plex Sans","Segoe UI",system-ui,-apple-system,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#0D121B; --surface:#151C28; --sunk:#1B2433; --ink:#E5EAF3; --muted:#98A2B5; --line:#283244;
+    --accent:#7E9BFF; --accent-ink:#0D121B; --accent-soft:#1E2A4A; --star:#F0C53A;
+    --st-wishlist:#7F8AA0; --st-applied:#5B8EF0; --st-screen:#9C7CF0; --st-interview:#E8A23A; --st-offer:#3CC08A; --st-closed:#E0686C;
+    --good:#4FD19A; --good-soft:#15352A; --warn:#F0B454; --warn-soft:#3A2C12; --bad:#F08A8D; --bad-soft:#3D1D20;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 2px 10px rgba(0,0,0,.25);
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#0D121B; --surface:#151C28; --sunk:#1B2433; --ink:#E5EAF3; --muted:#98A2B5; --line:#283244;
+  --accent:#7E9BFF; --accent-ink:#0D121B; --accent-soft:#1E2A4A; --star:#F0C53A;
+  --st-wishlist:#7F8AA0; --st-applied:#5B8EF0; --st-screen:#9C7CF0; --st-interview:#E8A23A; --st-offer:#3CC08A; --st-closed:#E0686C;
+  --good:#4FD19A; --good-soft:#15352A; --warn:#F0B454; --warn-soft:#3A2C12; --bad:#F08A8D; --bad-soft:#3D1D20;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 2px 10px rgba(0,0,0,.25);
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font:14px/1.5 var(--f-body);margin:0}
+a{color:var(--accent)}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.wrap{max-width:1240px;margin:0 auto;padding-inline:16px;padding-block:20px 48px}
+@media (min-width:760px){.wrap{padding-inline:24px}}
+
+/* header */
+.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 24px}
+.brand h1{font:650 clamp(24px,4vw,32px)/1.1 var(--f-display);letter-spacing:-.01em;margin:0;text-wrap:balance}
+.brand h1 .stars{color:var(--star)}
+.brand p{margin:4px 0 0;color:var(--muted)}
+.pill{display:inline-flex;align-items:center;gap:6px;font:500 12px/1 var(--f-mono);padding:6px 10px;border-radius:999px;background:var(--sunk);color:var(--muted);white-space:nowrap}
+.pill::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+.pill.ok{background:var(--good-soft);color:var(--good)}
+.pill.bad{background:var(--bad-soft);color:var(--bad)}
+.tabs{display:flex;gap:4px;margin:20px 0 18px;border-bottom:1px solid var(--line);overflow-x:auto}
+.tab{background:none;border:0;border-bottom:2px solid transparent;padding:10px 12px;font-weight:500;color:var(--muted);cursor:pointer;white-space:nowrap;margin-bottom:-1px}
+.tab[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent)}
+.tab:hover{color:var(--ink)}
+.tab .n{font:500 11px var(--f-mono);color:var(--muted);margin-left:4px}
+
+/* shared controls */
+.btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--surface);padding:7px 12px;border-radius:8px;cursor:pointer;font-weight:500;text-decoration:none;color:var(--ink);white-space:nowrap}
+.btn:hover{border-color:var(--muted)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn.danger{color:var(--bad)}
+.btn.small{padding:4px 9px;font-size:13px}
+.field{display:flex;flex-direction:column;gap:4px;min-width:0}
+.field label,.lbl{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+input[type=text],input[type=url],input[type=date],input[type=search],select,textarea{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:7px 10px;min-width:0;width:100%}
+textarea{resize:vertical;min-height:70px}
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.toolbar .grow{flex:1 1 200px}
+.toolbar select{width:auto}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button{border:0;background:var(--surface);padding:7px 12px;cursor:pointer;color:var(--muted);font-weight:500}
+.seg button[aria-pressed="true"]{background:var(--accent-soft);color:var(--ink)}
+.chip{display:inline-block;font-size:11.5px;font-weight:500;padding:1px 7px;border-radius:5px;background:var(--sunk);color:var(--muted);white-space:nowrap}
+.cc{font:500 11.5px var(--f-mono);letter-spacing:.04em;padding:1px 5px;border:1px solid var(--line);border-radius:4px;color:var(--ink)}
+.visa{font-size:11.5px;font-weight:500;padding:1px 7px;border-radius:5px;white-space:nowrap}
+.v-yes{background:var(--good-soft);color:var(--good)}
+.v-no{background:var(--bad-soft);color:var(--bad)}
+.v-unknown{background:var(--warn-soft);color:var(--warn)}
+.muted{color:var(--muted)}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+h2{font:650 19px/1.25 var(--f-display);margin:0;text-wrap:balance}
+h3{font:600 15px/1.3 var(--f-body);margin:0}
+
+/* summary */
+.summary{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:16px;margin-bottom:18px}
+@media (max-width:860px){.summary{grid-template-columns:1fr}}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px}
+.funnel{display:flex;height:12px;border-radius:6px;overflow:hidden;background:var(--sunk);margin:12px 0 10px}
+.funnel span{display:block;height:100%}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13px}
+.legend b{font:500 13px var(--f-mono)}
+.dot{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:6px;vertical-align:1px}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
+.stat .v{font:650 24px/1 var(--f-display);font-variant-numeric:tabular-nums}
+.stat .k{font-size:12px;color:var(--muted);margin-top:4px}
+.due{list-style:none;margin:10px 0 0;padding:0;display:flex;flex-direction:column}
+.due li{display:grid;grid-template-columns:64px minmax(0,1fr);gap:10px;padding:7px 0;border-top:1px solid var(--line);cursor:pointer}
+.due li:first-child{border-top:0}
+.due .when{font:500 12px var(--f-mono);color:var(--muted);padding-top:1px}
+.due .when.late{color:var(--bad)}
+.due .when.soon{color:var(--warn)}
+.due .what{min-width:0}
+.due .what div{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* board */
+.board{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(184px,1fr);gap:10px;overflow-x:auto;padding-bottom:6px;margin-top:14px}
+.col{background:var(--sunk);border-radius:12px;padding:10px;display:flex;flex-direction:column;gap:8px;min-height:160px}
+.col.drop{outline:2px dashed var(--accent);outline-offset:-2px}
+.col-h{display:flex;align-items:center;justify-content:space-between;font-weight:600;font-size:13px;padding:2px 2px 4px;border-bottom:2px solid var(--c)}
+.col-h .n{font:500 12px var(--f-mono);color:var(--muted)}
+.card{background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--c);border-radius:8px;padding:9px 10px;display:flex;flex-direction:column;gap:5px;cursor:pointer;box-shadow:var(--shadow)}
+.card:hover{border-color:var(--muted);border-left-color:var(--c)}
+.card.dragging{opacity:.45}
+.card .co{font-weight:600;display:flex;justify-content:space-between;gap:6px;align-items:baseline}
+.card .role{font-size:13px;line-height:1.35;overflow-wrap:anywhere}
+.card .role.none{color:var(--muted);font-style:italic}
+.card .meta{display:flex;flex-wrap:wrap;gap:4px 6px;align-items:center;font-size:12px;color:var(--muted)}
+.card .next{font-size:12px;font-family:var(--f-mono);color:var(--muted)}
+.card .next.late{color:var(--bad)}
+.card .next.soon{color:var(--warn)}
+.card .outcome{font-size:12px;color:var(--bad)}
+.card select{font-size:12px;padding:3px 6px;border-radius:6px}
+.ex{font:500 10px var(--f-mono);text-transform:uppercase;letter-spacing:.06em;color:var(--warn);background:var(--warn-soft);padding:1px 5px;border-radius:4px}
+.empty-col{font-size:12px;color:var(--muted);text-align:center;padding:14px 4px}
+
+/* list */
+.tablewrap{overflow-x:auto;margin-top:14px;background:var(--surface);border:1px solid var(--line);border-radius:12px}
+table{border-collapse:collapse;width:100%;min-width:880px;font-size:13px}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600;background:var(--sunk)}
+tbody tr{cursor:pointer}
+tbody tr:hover{background:var(--sunk)}
+tbody tr:last-child td{border-bottom:0}
+.stage-tag{display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.stage-tag::before{content:"";width:8px;height:8px;border-radius:2px;background:var(--c)}
+
+/* employers */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:12px;margin-top:14px}
+.emp{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:8px}
+.emp-h{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.emp .kind{font:500 11px var(--f-mono);text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.emp .cities{font-size:13px;color:var(--muted)}
+.emp .tags{display:flex;flex-wrap:wrap;gap:4px}
+.emp .acts{display:flex;flex-wrap:wrap;gap:6px;margin-top:auto;padding-top:4px}
+.count{font:500 12px var(--f-mono);color:var(--muted)}
+.note{font-size:13px;color:var(--muted);max-width:75ch}
+
+/* search */
+.search-grid{display:grid;grid-template-columns:minmax(0,320px) minmax(0,1fr);gap:16px;align-items:start}
+@media (max-width:860px){.search-grid{grid-template-columns:1fr}}
+.search-form{display:flex;flex-direction:column;gap:12px}
+.checks{display:flex;flex-direction:column;gap:6px}
+.checks label{display:flex;gap:8px;align-items:center;font-size:13.5px;cursor:pointer}
+.linkgroup{display:flex;flex-direction:column;gap:8px}
+.linkgroup+.linkgroup{margin-top:18px}
+.links{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:8px}
+.lk{display:flex;flex-direction:column;gap:2px;padding:10px 12px;border:1px solid var(--line);border-radius:8px;text-decoration:none;color:var(--ink);background:var(--surface)}
+.lk:hover{border-color:var(--accent)}
+.lk b{font-weight:600;font-size:13.5px}
+.lk b::after{content:" ↗";color:var(--muted);font-weight:400}
+.lk span{font-size:12px;color:var(--muted)}
+.qprev{font:12px/1.5 var(--f-mono);background:var(--sunk);padding:8px 10px;border-radius:8px;overflow-wrap:anywhere;color:var(--muted)}
+
+/* calendar */
+.cal{margin-top:18px}
+.cal-scroll{overflow-x:auto}
+.cal-grid{display:grid;grid-template-columns:170px repeat(12,minmax(30px,1fr));gap:3px 0;min-width:560px;font-size:12px;margin-top:10px}
+.cal-grid .m{font:500 11px var(--f-mono);color:var(--muted);text-align:center;padding-bottom:4px}
+.cal-grid .m.now{color:var(--accent);font-weight:600}
+.cal-grid .r{padding-right:8px;align-self:center;color:var(--ink);font-size:12.5px}
+.cal-grid .c{height:18px;background:var(--sunk)}
+.cal-grid .c.on{background:var(--accent)}
+.cal-grid .c.lite{background:var(--accent-soft)}
+.cal-grid .c.now{box-shadow:inset 0 0 0 1px var(--star)}
+
+/* visas */
+.visa-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;margin-top:14px}
+@media (max-width:400px){.visa-grid{grid-template-columns:1fr}}
+.vc{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.vc-h{display:flex;align-items:center;gap:8px}
+.vc ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.vc li a{font-weight:600;text-decoration:none}
+.vc li a::after{content:" ↗";color:var(--muted);font-weight:400}
+.vc li p{margin:1px 0 0;font-size:13px;color:var(--muted)}
+.vc .hubs{font-size:12.5px;color:var(--muted);border-top:1px solid var(--line);padding-top:8px}
+.callout{background:var(--accent-soft);border-radius:10px;padding:12px 14px;font-size:13.5px;max-width:90ch}
+
+/* modal */
+.modal{position:fixed;inset:0;background:rgba(10,14,22,.5);display:flex;align-items:flex-start;justify-content:center;padding:max(24px,env(safe-area-inset-top,0px)) 16px 24px;overflow-y:auto;z-index:20}
+.sheet{background:var(--surface);border-radius:14px;width:100%;max-width:640px;padding:18px;box-shadow:0 12px 40px rgba(0,0,0,.25)}
+.sheet-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.form-grid .full{grid-column:1/-1}
+@media (max-width:520px){.form-grid{grid-template-columns:1fr}}
+.sheet-foot{display:flex;flex-wrap:wrap;gap:8px;justify-content:space-between;margin-top:16px}
+.sheet-foot .r{display:flex;gap:8px}
+.x{background:none;border:0;font-size:22px;line-height:1;cursor:pointer;color:var(--muted);padding:4px 8px}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:9px 14px;border-radius:8px;font-size:13px;z-index:30;max-width:calc(100% - 32px)}
+.loading{padding:30px;text-align:center;color:var(--muted)}
+@media (prefers-reduced-motion:no-preference){.card,.lk,.btn{transition:border-color .12s}}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <h1>EU–UK Tech Job Tracker <span class="stars" aria-hidden="true">✦</span></h1>
+      <p>SWE, SDE, ML and AI roles across Europe and the UK: your pipeline, employers, searches and visa routes.</p>
+    </div>
+    <span class="pill" id="storePill">Starting</span>
+  </header>
+
+  <nav class="tabs" role="tablist" aria-label="Sections">
+    <button class="tab" role="tab" id="t-pipeline" data-tab="pipeline" aria-selected="true">Pipeline <span class="n" id="n-pipeline"></span></button>
+    <button class="tab" role="tab" id="t-employers" data-tab="employers" aria-selected="false">Employers <span class="n" id="n-employers"></span></button>
+    <button class="tab" role="tab" id="t-search" data-tab="search" aria-selected="false">Job search</button>
+    <button class="tab" role="tab" id="t-visas" data-tab="visas" aria-selected="false">Visas</button>
+  </nav>
+
+  <!-- PIPELINE -->
+  <section id="p-pipeline" role="tabpanel" aria-labelledby="t-pipeline">
+    <div class="summary">
+      <div class="panel">
+        <h2>Where your applications stand</h2>
+        <div class="funnel" id="funnel" aria-hidden="true"></div>
+        <div class="legend" id="legend"></div>
+        <div class="stats" id="stats"></div>
+      </div>
+      <div class="panel">
+        <h2>Next steps</h2>
+        <ul class="due" id="due"></ul>
+      </div>
+    </div>
+
+    <div class="toolbar">
+      <input type="search" class="grow" id="q" placeholder="Search company, role, city, notes" aria-label="Search applications">
+      <select id="fTrack" aria-label="Filter by track"></select>
+      <select id="fCountry" aria-label="Filter by country"></select>
+      <div class="seg" role="group" aria-label="View">
+        <button id="vBoard" aria-pressed="true">Board</button>
+        <button id="vList" aria-pressed="false">List</button>
+      </div>
+      <button class="btn primary" id="addBtn">+ Add application</button>
+    </div>
+    <div class="toolbar" style="margin-top:8px">
+      <button class="btn small" id="expCsv">Export CSV</button>
+      <button class="btn small" id="expJson">Export JSON</button>
+      <label class="btn small" for="impFile">Import JSON</label>
+      <input type="file" id="impFile" accept="application/json,.json" hidden>
+      <button class="btn small" id="clearEx" hidden>Remove examples</button>
+      <span class="muted" style="font-size:12.5px" id="hint">Drag cards between columns or change the stage on each card.</span>
+    </div>
+
+    <div id="boardView"><div class="loading">Loading your applications…</div></div>
+    <div id="listView" hidden></div>
+  </section>
+
+  <!-- EMPLOYERS -->
+  <section id="p-employers" role="tabpanel" aria-labelledby="t-employers" hidden>
+    <p class="note">Employers that hire software, ML and AI engineers in Europe and the UK and have a track record of relocating people. Sponsorship still depends on the role and level, so check each posting and the official sponsor registers on the Visas tab.</p>
+    <div class="toolbar" style="margin-top:12px">
+      <input type="search" class="grow" id="eq" placeholder="Search employers or cities" aria-label="Search employers">
+      <select id="eCountry" aria-label="Country"></select>
+      <select id="eTag" aria-label="Focus"></select>
+      <select id="eKind" aria-label="Type"></select>
+      <span class="count" id="eCount"></span>
+    </div>
+    <div class="grid" id="empGrid"></div>
+  </section>
+
+  <!-- SEARCH -->
+  <section id="p-search" role="tabpanel" aria-labelledby="t-search" hidden>
+    <div class="search-grid">
+      <div class="panel search-form">
+        <h2>Build a search</h2>
+        <div class="field"><label for="sRole">Role</label><select id="sRole"></select></div>
+        <div class="field"><label for="sCustom">Or type your own title</label><input type="text" id="sCustom" placeholder="e.g. Computer Vision Engineer"></div>
+        <div class="field"><label for="sLoc">Location</label><select id="sLoc"></select></div>
+        <div class="checks">
+          <span class="lbl">Options</span>
+          <label><input type="checkbox" id="sWeek" checked> Posted in the last 7 days</label>
+          <label><input type="checkbox" id="sEntry"> Graduate or junior level</label>
+          <label><input type="checkbox" id="sVisa"> Mentions visa sponsorship</label>
+          <label><input type="checkbox" id="sRemote"> Remote</label>
+        </div>
+        <div class="field"><span class="lbl">Search phrase</span><div class="qprev" id="sPrev"></div></div>
+      </div>
+      <div>
+        <div id="sOut"></div>
+        <div class="panel cal">
+          <h2>When hiring opens</h2>
+          <p class="note" style="margin:4px 0 0">Typical yearly pattern for European and UK tech hiring. Dates vary by company, so treat this as a guide for when to start watching.</p>
+          <div class="cal-scroll"><div class="cal-grid" id="cal"></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- VISAS -->
+  <section id="p-visas" role="tabpanel" aria-labelledby="t-visas" hidden>
+    <div class="callout"><b>Who needs a permit?</b> EU, EEA and Swiss citizens can work anywhere in the EU, EEA and Switzerland without one. Everyone except Irish citizens (and people with UK settled status) needs a visa to work in the UK. Salary thresholds change every year, so check the official page before you rely on a number.</div>
+    <div class="visa-grid" id="visaGrid"></div>
+  </section>
+</div>
+
+<!-- EDITOR -->
+<div class="modal" id="modal" hidden>
+  <form class="sheet" id="form" role="dialog" aria-modal="true" aria-labelledby="formTitle">
+    <div class="sheet-h"><h2 id="formTitle">Add application</h2><button type="button" class="x" id="closeX" aria-label="Close">×</button></div>
+    <div class="form-grid">
+      <div class="field"><label for="f-company">Company</label><input type="text" id="f-company" required></div>
+      <div class="field"><label for="f-role">Role</label><input type="text" id="f-role" placeholder="e.g. Machine Learning Engineer"></div>
+      <div class="field"><label for="f-track">Track</label><select id="f-track"></select></div>
+      <div class="field"><label for="f-status">Stage</label><select id="f-status"></select></div>
+      <div class="field"><label for="f-country">Country</label><select id="f-country"></select></div>
+      <div class="field"><label for="f-city">City</label><input type="text" id="f-city" placeholder="e.g. Berlin"></div>
+      <div class="field" id="outcomeField"><label for="f-outcome">Outcome</label><select id="f-outcome"><option>Rejected</option><option>Withdrew</option><option>No reply</option><option>Declined offer</option><option>Role closed</option></select></div>
+      <div class="field"><label for="f-visa">Visa sponsorship</label><select id="f-visa"><option value="unknown">Not sure yet</option><option value="yes">Sponsors</option><option value="no">No sponsorship</option><option value="na">Not needed</option></select></div>
+      <div class="field"><label for="f-applied">Applied on</label><input type="date" id="f-applied"></div>
+      <div class="field"><label for="f-next">Next step date</label><input type="date" id="f-next"></div>
+      <div class="field full"><label for="f-nextnote">Next step</label><input type="text" id="f-nextnote" placeholder="e.g. HackerRank OA, recruiter call, system design round"></div>
+      <div class="field"><label for="f-salary">Salary / range</label><input type="text" id="f-salary" placeholder="e.g. €75–90k"></div>
+      <div class="field"><label for="f-source">Found via</label><input type="text" id="f-source" placeholder="LinkedIn, referral, careers page"></div>
+      <div class="field full"><label for="f-url">Job posting link</label><input type="url" id="f-url" placeholder="https://"></div>
+      <div class="field full"><label for="f-notes">Notes</label><textarea id="f-notes" placeholder="Recruiter name, interview topics, referral contact"></textarea></div>
+    </div>
+    <div class="sheet-foot">
+      <button type="button" class="btn danger" id="delBtn">Delete</button>
+      <div class="r"><button type="button" class="btn" id="cancelBtn">Cancel</button><button type="submit" class="btn primary" id="saveBtn">Save</button></div>
+    </div>
+  </form>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+(function(){
+"use strict";
+/* ---------- reference data ---------- */
+const STAGES=[
+  {id:"wishlist",label:"Wishlist"},
+  {id:"applied",label:"Applied"},
+  {id:"screen",label:"OA / Screen"},
+  {id:"interview",label:"Interviews"},
+  {id:"offer",label:"Offer"},
+  {id:"closed",label:"Closed"}
+];
+const STAGE_IDX=Object.fromEntries(STAGES.map((s,i)=>[s.id,i]));
+const TRACKS=["SWE","SDE","Backend","ML Engineer","AI / LLM","Research Eng","Data / MLOps","Infra / SRE","Quant Dev","Graduate / Intern"];
+const COUNTRIES={UK:"United Kingdom",IE:"Ireland",DE:"Germany",NL:"Netherlands",FR:"France",CH:"Switzerland",SE:"Sweden",DK:"Denmark",FI:"Finland",NO:"Norway",ES:"Spain",PT:"Portugal",IT:"Italy",PL:"Poland",AT:"Austria",BE:"Belgium",CZ:"Czechia",EE:"Estonia",HU:"Hungary",LU:"Luxembourg",REMOTE:"Remote (Europe)"};
+const VISA_LABEL={yes:"Sponsors",no:"No sponsor",unknown:"Visa ?",na:"No visa needed"};
+const VISA_CLASS={yes:"v-yes",no:"v-no",unknown:"v-unknown",na:"v-yes"};
+
+// [name, type, offices, country codes, focus tags, careers url, known to sponsor]
+const EMPLOYERS=[
+  ["Google","Big tech","London · Zurich · Munich · Dublin · Warsaw · Paris","UK CH DE IE PL FR","SWE,ML,Infra","https://www.google.com/about/careers/applications/",1],
+  ["Google DeepMind","AI lab","London · Zurich · Paris","UK CH FR","AI research,ML","https://deepmind.google/about/careers/",1],
+  ["Meta","Big tech","London · Dublin · Paris · Zurich","UK IE FR CH","SWE,ML,Infra","https://www.metacareers.com/",1],
+  ["Amazon & AWS","Big tech","London · Dublin · Berlin · Luxembourg · Madrid · Edinburgh · Cambridge","UK IE DE LU ES","SDE,ML,Infra","https://www.amazon.jobs/",1],
+  ["Microsoft","Big tech","London · Cambridge · Dublin · Prague · Zurich","UK IE CZ CH","SWE,AI research,Infra","https://jobs.careers.microsoft.com/",1],
+  ["Apple","Big tech","London · Cambridge · Munich · Zurich · Cork · Barcelona","UK DE CH IE ES","SWE,ML,Hardware","https://jobs.apple.com/",1],
+  ["Booking.com","Big tech","Amsterdam","NL","SWE,ML,Data","https://jobs.booking.com/",1],
+  ["Uber","Big tech","Amsterdam · London","NL UK","SWE,ML","https://www.uber.com/careers/",1],
+  ["NVIDIA","Hardware","Munich · Berlin · Zurich · Cambridge · Reading","DE CH UK","ML,Hardware,SWE","https://www.nvidia.com/en-us/about-nvidia/careers/",1],
+  ["Arm","Hardware","Cambridge · Manchester · Sheffield","UK","SWE,Hardware,ML","https://careers.arm.com/",1],
+  ["ASML","Hardware","Veldhoven (Eindhoven)","NL","SWE,ML,Hardware","https://www.asml.com/en/careers",1],
+  ["Anthropic","AI lab","London · Dublin · Zurich","UK IE CH","AI research,ML,SWE","https://www.anthropic.com/careers",1],
+  ["OpenAI","AI lab","London · Dublin · Paris","UK IE FR","AI research,ML,SWE","https://openai.com/careers/",1],
+  ["Mistral AI","AI lab","Paris · London","FR UK","AI research,ML,SWE","https://mistral.ai/careers",1],
+  ["Cohere","AI lab","London · Paris","UK FR","ML,SWE","https://cohere.com/careers",1],
+  ["Hugging Face","AI lab","Paris · remote","FR REMOTE","ML,SWE","https://apply.workable.com/huggingface/",0],
+  ["ElevenLabs","AI lab","London · Warsaw · remote","UK PL REMOTE","ML,SWE","https://elevenlabs.io/careers",1],
+  ["Synthesia","AI lab","London · Amsterdam · Copenhagen","UK NL DK","ML,SWE","https://www.synthesia.io/careers",1],
+  ["Wayve","AI lab","London","UK","ML,AI research","https://wayve.ai/careers/",1],
+  ["PolyAI","AI lab","London","UK","ML,SWE","https://poly.ai/careers/",1],
+  ["DeepL","AI lab","Cologne · Berlin · Amsterdam · London","DE NL UK","ML,SWE","https://jobs.deepl.com/",1],
+  ["Helsing","AI lab","Munich · Berlin · London · Paris","DE UK FR","ML,SWE","https://helsing.ai/careers",1],
+  ["Isomorphic Labs","AI lab","London · Lausanne","UK CH","ML,AI research","https://www.isomorphiclabs.com/careers",1],
+  ["Poolside","AI lab","Paris · London","FR UK","AI research,ML","https://poolside.ai/careers",0],
+  ["Faculty","Scale-up","London","UK","ML,Data","https://faculty.ai/careers/",1],
+  ["Lovable","Scale-up","Stockholm","SE","SWE,ML","https://lovable.dev/careers",0],
+  ["Stripe","Scale-up","Dublin · London","IE UK","SWE,Infra","https://stripe.com/jobs",1],
+  ["Revolut","Scale-up","London · Kraków · Barcelona · remote","UK PL ES","SWE,Data,ML","https://www.revolut.com/careers/",1],
+  ["Monzo","Scale-up","London · Cardiff · remote UK","UK","SWE,Data","https://monzo.com/careers",1],
+  ["Wise","Scale-up","London · Tallinn · Budapest","UK EE HU","SWE,Data","https://wise.jobs/",1],
+  ["Adyen","Scale-up","Amsterdam · Madrid","NL ES","SWE,Data,Infra","https://careers.adyen.com/",1],
+  ["Klarna","Scale-up","Stockholm · Berlin","SE DE","SWE,ML","https://www.klarna.com/careers/",1],
+  ["N26","Scale-up","Berlin · Barcelona","DE ES","SWE","https://n26.com/en/careers",1],
+  ["Trade Republic","Scale-up","Berlin","DE","SWE","https://traderepublic.com/careers",1],
+  ["Spotify","Scale-up","Stockholm · London","SE UK","SWE,ML,Data","https://www.lifeatspotify.com/jobs",1],
+  ["Zalando","Scale-up","Berlin · Dublin · Helsinki","DE IE FI","SWE,ML,Data","https://jobs.zalando.com/",1],
+  ["Delivery Hero","Scale-up","Berlin","DE","SWE,Data,ML","https://careers.deliveryhero.com/",1],
+  ["Celonis","Scale-up","Munich","DE","SWE,ML,Data","https://careers.celonis.com/",1],
+  ["Picnic","Scale-up","Amsterdam","NL","SWE,Data","https://jobs.picnic.app/",1],
+  ["Miro","Scale-up","Amsterdam · Berlin · London","NL DE UK","SWE","https://miro.com/careers/",1],
+  ["Skyscanner","Scale-up","Edinburgh · London · Barcelona","UK ES","SWE,Data","https://www.skyscanner.net/jobs/",1],
+  ["Deliveroo","Scale-up","London","UK","SWE,Data,ML","https://careers.deliveroo.co.uk/",1],
+  ["Doctolib","Scale-up","Paris · Berlin","FR DE","SWE,Data","https://careers.doctolib.com/",0],
+  ["Bolt","Scale-up","Tallinn","EE","SWE,ML","https://bolt.eu/en/careers/",1],
+  ["JetBrains","Scale-up","Amsterdam · Munich · Berlin · Prague","NL DE CZ","SWE,ML","https://www.jetbrains.com/careers/jobs/",1],
+  ["Bloomberg","Enterprise","London","UK","SWE,ML,Data","https://www.bloomberg.com/company/careers/",1],
+  ["Datadog","Enterprise","Paris · Dublin · Amsterdam · Madrid","FR IE NL ES","SWE,Infra,Data","https://careers.datadoghq.com/",1],
+  ["Cloudflare","Enterprise","London · Lisbon","UK PT","SWE,Infra,Security","https://www.cloudflare.com/careers/",1],
+  ["Palantir","Enterprise","London","UK","SWE","https://www.palantir.com/careers/",1],
+  ["SAP","Enterprise","Walldorf · Berlin · Munich · Dublin","DE IE","SWE,AI research,Data","https://jobs.sap.com/",1],
+  ["Ocado Technology","Enterprise","Hatfield · London · Barcelona · Kraków","UK ES PL","SWE,ML,Infra","https://careers.ocadogroup.com/",1],
+  ["Criteo","Enterprise","Paris · Grenoble","FR","ML,SWE,Data","https://careers.criteo.com/",1],
+  ["King","Enterprise","Stockholm · London · Barcelona","SE UK ES","SWE,ML","https://careers.king.com/",1],
+  ["Canonical","Enterprise","Remote across Europe","REMOTE","SWE,Infra","https://canonical.com/careers",0],
+  ["Jane Street","Quant","London · Amsterdam","UK NL","Quant dev,SWE","https://www.janestreet.com/join-jane-street/",1],
+  ["Optiver","Quant","Amsterdam · London","NL UK","Quant dev,SWE","https://optiver.com/working-at-optiver/career-opportunities/",1],
+  ["IMC Trading","Quant","Amsterdam","NL","Quant dev,SWE","https://www.imc.com/eu/careers",1],
+  ["Flow Traders","Quant","Amsterdam","NL","Quant dev,SWE","https://www.flowtraders.com/careers",1],
+  ["Jump Trading","Quant","London · Amsterdam","UK NL","Quant dev,SWE,ML","https://www.jumptrading.com/careers/",1],
+  ["Hudson River Trading","Quant","London","UK","Quant dev,SWE","https://www.hudsonrivertrading.com/careers/",1],
+  ["XTX Markets","Quant","London · Paris","UK FR","Quant dev,ML","https://www.xtxmarkets.com/careers/",1],
+  ["G-Research","Quant","London","UK","Quant dev,ML,SWE","https://www.gresearch.com/",1],
+  ["Citadel Securities","Quant","London","UK","Quant dev,SWE","https://www.citadelsecurities.com/careers/",1]
+].map(([name,kind,cities,cc,tags,url,visa])=>({name,kind,cities,cc:cc.split(" "),tags:tags.split(","),url,visa:!!visa}));
+
+const ROLES=[
+  ["Software Engineer","SWE"],["Software Development Engineer","SDE"],["Backend Engineer","Backend"],
+  ["Machine Learning Engineer","ML Engineer"],["AI Engineer","AI / LLM"],["LLM Engineer","AI / LLM"],
+  ["Research Engineer","Research Eng"],["Applied Scientist","Research Eng"],["Data Scientist","Data / MLOps"],
+  ["MLOps Engineer","Data / MLOps"],["Site Reliability Engineer","Infra / SRE"],["Quantitative Developer","Quant Dev"],
+  ["Graduate Software Engineer","Graduate / Intern"],["Software Engineering Intern","Graduate / Intern"]
+];
+// [label, linkedin/google location, indeed country code, country code]
+const LOCS=[
+  ["Anywhere in Europe","Europe",null,null],
+  ["United Kingdom","United Kingdom","uk","UK"],["London","London, United Kingdom","uk","UK"],["Cambridge (UK)","Cambridge, United Kingdom","uk","UK"],["Edinburgh","Edinburgh, United Kingdom","uk","UK"],["Manchester","Manchester, United Kingdom","uk","UK"],
+  ["Ireland","Ireland","ie","IE"],["Dublin","Dublin, Ireland","ie","IE"],
+  ["Germany","Germany","de","DE"],["Berlin","Berlin, Germany","de","DE"],["Munich","Munich, Germany","de","DE"],["Hamburg","Hamburg, Germany","de","DE"],
+  ["Netherlands","Netherlands","nl","NL"],["Amsterdam","Amsterdam, Netherlands","nl","NL"],["Eindhoven","Eindhoven, Netherlands","nl","NL"],
+  ["France","France","fr","FR"],["Paris","Paris, France","fr","FR"],
+  ["Switzerland","Switzerland","ch","CH"],["Zurich","Zurich, Switzerland","ch","CH"],
+  ["Sweden","Sweden","se","SE"],["Stockholm","Stockholm, Sweden","se","SE"],
+  ["Denmark","Denmark","dk","DK"],["Copenhagen","Copenhagen, Denmark","dk","DK"],
+  ["Finland","Finland","fi","FI"],["Norway","Norway","no","NO"],
+  ["Spain","Spain","es","ES"],["Barcelona","Barcelona, Spain","es","ES"],["Madrid","Madrid, Spain","es","ES"],
+  ["Portugal","Portugal","pt","PT"],["Lisbon","Lisbon, Portugal","pt","PT"],
+  ["Poland","Poland","pl","PL"],["Warsaw","Warsaw, Poland","pl","PL"],["Kraków","Krakow, Poland","pl","PL"],
+  ["Austria","Austria","at","AT"],["Belgium","Belgium","be","BE"],["Czechia","Czechia","cz","CZ"],["Italy","Italy","it","IT"],["Estonia","Estonia",null,"EE"],["Luxembourg","Luxembourg","lu","LU"]
+];
+
+const VISAS=[
+  {cc:"UK",name:"United Kingdom",hubs:"London, Cambridge, Oxford, Edinburgh, Manchester, Bristol",routes:[
+    ["Skilled Worker","Job offer from a Home Office licensed sponsor, paid at or above the threshold for the role.","https://www.gov.uk/skilled-worker-visa"],
+    ["Graduate","Work without a sponsor after finishing a UK degree.","https://www.gov.uk/graduate-visa"],
+    ["High Potential Individual","For recent graduates of listed top-ranked universities. No job offer needed.","https://www.gov.uk/high-potential-individual-visa"],
+    ["Global Talent","For endorsed leaders or rising leaders in digital technology or research. No sponsor needed.","https://www.gov.uk/global-talent"],
+    ["Licensed sponsor register","Check whether an employer can sponsor before you apply.","https://www.gov.uk/government/publications/register-of-licensed-sponsors-workers"]]},
+  {cc:"IE",name:"Ireland",hubs:"Dublin, Cork, Galway",routes:[
+    ["Critical Skills Employment Permit","Covers most software, data and ML roles above the salary floor, with a faster path to long-term residence.","https://enterprise.gov.ie/en/what-we-do/workplace-and-skills/employment-permits/"],
+    ["General Employment Permit","For roles not on the critical skills list, subject to a labour market test.","https://enterprise.gov.ie/en/what-we-do/workplace-and-skills/employment-permits/"]]},
+  {cc:"DE",name:"Germany",hubs:"Berlin, Munich, Hamburg, Frankfurt, Stuttgart, Tübingen",routes:[
+    ["EU Blue Card","Degree plus a job at the salary threshold. IT roles use the lower shortage threshold, and experienced IT specialists can qualify without a degree.","https://www.make-it-in-germany.com/en/visa-residence/types/eu-blue-card"],
+    ["Opportunity Card","Points-based card to look for work in Germany for up to a year, with part-time work allowed meanwhile.","https://www.make-it-in-germany.com/en/visa-residence/types/job-search-opportunity-card"]]},
+  {cc:"NL",name:"Netherlands",hubs:"Amsterdam, Eindhoven, Rotterdam, Utrecht, Delft",routes:[
+    ["Highly Skilled Migrant","Employer must be an IND recognised sponsor. The salary criterion is lower if you are under 30 or a recent graduate.","https://ind.nl/en/residence-permits/work/highly-skilled-migrant"],
+    ["Orientation year","A year to find work after graduating from a Dutch or top-ranked university.","https://ind.nl/en/residence-permits/work/residence-permit-for-orientation-year"],
+    ["Recognised sponsor register","Check whether an employer can file a Highly Skilled Migrant application.","https://ind.nl/en/public-register-recognised-sponsors"]]},
+  {cc:"FR",name:"France",hubs:"Paris, Lyon, Grenoble, Sophia Antipolis",routes:[
+    ["Talent Passport","Multi-year permit for skilled employees, EU Blue Card holders and staff of innovative companies (French Tech Visa).","https://france-visas.gouv.fr/"]]},
+  {cc:"CH",name:"Switzerland",hubs:"Zurich, Geneva, Lausanne, Basel",routes:[
+    ["L and B permits (non-EU)","Annual quotas apply, and the employer must show no Swiss or EU/EFTA candidate fits. EU/EFTA citizens have free movement.","https://www.sem.admin.ch/sem/en/home.html"]]},
+  {cc:"SE",name:"Sweden",hubs:"Stockholm, Gothenburg, Malmö, Lund",routes:[
+    ["Work permit","Employer-led permit from a job offer that meets salary and insurance terms. The EU Blue Card is also available.","https://www.migrationsverket.se/English/"]]},
+  {cc:"DK",name:"Denmark",hubs:"Copenhagen, Aarhus",routes:[
+    ["Pay Limit and Fast-track schemes","Pay Limit covers high salaries in any field. Fast-track is quicker when the employer is certified.","https://www.nyidanmark.dk/en-GB"]]},
+  {cc:"FI",name:"Finland",hubs:"Helsinki, Espoo, Tampere, Oulu",routes:[
+    ["Specialist permit","Fast-track processing is available for specialists and their families.","https://migri.fi/en/home"]]},
+  {cc:"ES",name:"Spain",hubs:"Barcelona, Madrid, Málaga, Valencia",routes:[
+    ["Highly Qualified Professional","Handled by the large companies unit with quick decisions. The EU Blue Card and a digital nomad visa are also options.","https://immigration-portal.ec.europa.eu/index_en"]]},
+  {cc:"PT",name:"Portugal",hubs:"Lisbon, Porto, Braga",routes:[
+    ["Tech Visa and EU Blue Card","Tech Visa covers certified companies hiring highly qualified staff.","https://immigration-portal.ec.europa.eu/index_en"]]},
+  {cc:"PL",name:"Poland",hubs:"Warsaw, Kraków, Wrocław, Gdańsk",routes:[
+    ["Work permit and EU Blue Card","Employer applies for the work permit. The Blue Card needs a degree and salary above the threshold.","https://www.gov.pl/web/udsc-en"]]},
+  {cc:"AT",name:"Austria",hubs:"Vienna, Graz, Linz",routes:[
+    ["Red-White-Red Card","Points-based, with routes for very highly qualified and shortage-occupation workers. The EU Blue Card is also available.","https://www.migration.gv.at/en/"]]},
+  {cc:"EE",name:"Estonia",hubs:"Tallinn, Tartu",routes:[
+    ["Work permit and Startup Visa","Startup Visa also covers people hired by qualifying startups.","https://www.workinestonia.com/"]]},
+  {cc:"EU",name:"Rest of the EU",hubs:"Covers Belgium, Italy, Czechia, Luxembourg and others",routes:[
+    ["EU Immigration Portal","Official guide to permits in every EU country, including the EU Blue Card.","https://immigration-portal.ec.europa.eu/index_en"]]}
+];
+
+// [row label, start month 0-11, end month, strength]
+const CAL=[
+  ["Quant intern & grad",6,10,"on"],
+  ["Big tech intern & new grad",7,11,"on"],
+  ["UK grad schemes",8,11,"on"],
+  ["Big tech experienced",0,11,"lite"],
+  ["AI labs",0,11,"lite"],
+  ["Scale-ups & startups",0,11,"lite"]
+];
+const MONTHS=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
+/* ---------- helpers ---------- */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const pad=n=>String(n).padStart(2,"0");
+const iso=d=>d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());
+const todayIso=()=>iso(new Date());
+const addDays=n=>{const d=new Date();d.setDate(d.getDate()+n);return iso(d)};
+const daysUntil=s=>{if(!s)return null;const [y,m,d]=s.split("-").map(Number);const t=new Date();t.setHours(0,0,0,0);return Math.round((new Date(y,m-1,d)-t)/864e5)};
+const fmtDate=s=>{if(!s)return"";const [y,m,d]=s.split("-").map(Number);const dt=new Date(y,m-1,d);return dt.toLocaleDateString("en-GB",{day:"numeric",month:"short"})};
+const newId=()=>"a"+Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+function lsGet(k){try{return localStorage.getItem(k)}catch(e){return null}}
+function lsSet(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+let toastTimer=null;
+function toast(msg){const t=$("#toast");t.textContent=msg;t.hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>{t.hidden=true},2600)}
+function setPill(text,cls){const p=$("#storePill");p.textContent=text;p.className="pill"+(cls?" "+cls:"")}
+const options=(list,sel)=>list.map(([v,l])=>`<option value="${esc(v)}"${v===sel?" selected":""}>${esc(l)}</option>`).join("");
+
+/* ---------- storage ---------- */
+const LS_KEY="euuk-tracker-v1", UI_KEY="euuk-tracker-ui";
+let items=[], mode="connecting", col=null, readOnly=false;
+const ui=Object.assign({view:"board",q:"",track:"",country:"",tab:"pipeline"},(()=>{try{return JSON.parse(lsGet(UI_KEY)||"{}")}catch(e){return{}}})());
+ui.q="";
+const saveUi=()=>lsSet(UI_KEY,JSON.stringify({view:ui.view,track:ui.track,country:ui.country,tab:ui.tab}));
+
+function exampleRows(){
+  const now=new Date().toISOString();
+  return [
+    {company:"Adyen",role:"Software Engineer, Payments",track:"SWE",country:"NL",city:"Amsterdam",status:"applied",furthest:1,applied:addDays(-9),next:addDays(2),nextNote:"Follow up with recruiter",visa:"yes",source:"Careers page",url:"https://careers.adyen.com/",salary:"",notes:""},
+    {company:"DeepL",role:"Machine Learning Engineer",track:"ML Engineer",country:"DE",city:"Cologne",status:"screen",furthest:2,applied:addDays(-16),next:addDays(-1),nextNote:"Submit take-home",visa:"yes",source:"LinkedIn",url:"https://jobs.deepl.com/",salary:"",notes:""},
+    {company:"Monzo",role:"Backend Engineer",track:"Backend",country:"UK",city:"London",status:"interview",furthest:3,applied:addDays(-24),next:addDays(5),nextNote:"Onsite loop, 4 rounds",visa:"yes",source:"Referral",url:"https://monzo.com/careers",salary:"",notes:""},
+    {company:"Mistral AI",role:"Research Engineer",track:"Research Eng",country:"FR",city:"Paris",status:"wishlist",furthest:0,applied:"",next:"",nextNote:"",visa:"unknown",source:"",url:"https://mistral.ai/careers",salary:"",notes:""},
+    {company:"Spotify",role:"ML Engineer, Personalisation",track:"ML Engineer",country:"SE",city:"Stockholm",status:"closed",outcome:"Rejected",furthest:2,applied:addDays(-40),next:"",nextNote:"",visa:"yes",source:"LinkedIn",url:"https://www.lifeatspotify.com/jobs",salary:"",notes:""}
+  ].map(r=>Object.assign(r,{id:newId(),example:true,created:now,updated:now}));
+}
+function loadLocal(){
+  const raw=lsGet(LS_KEY);
+  if(raw==null){const rows=exampleRows();lsSet(LS_KEY,JSON.stringify(rows));return rows}
+  try{const v=JSON.parse(raw);return Array.isArray(v)?v:[]}catch(e){return[]}
+}
+const saveLocal=()=>lsSet(LS_KEY,JSON.stringify(items));
+function clean(it){const o={};for(const k in it){if(it[k]!==undefined&&k!=="id")o[k]=it[k]}return o}
+
+async function putItem(it){
+  it.updated=new Date().toISOString();
+  if(!it.created)it.created=it.updated;
+  if(mode==="db"){
+    if(readOnly){toast("You can view this tracker but not change it.");return false}
+    try{await col.doc(it.id).set(clean(it));return true}
+    catch(e){if(e&&e.code==="invalid_argument"){readOnly=true;setPill("View only","bad")}toast("Could not save: "+((e&&e.message)||"try again"));return false}
+  }
+  const i=items.findIndex(x=>x.id===it.id);
+  if(i>=0)items[i]=it;else items.push(it);
+  saveLocal();render();return true;
+}
+async function removeItem(id){
+  if(mode==="db"){try{await col.doc(id).delete();return true}catch(e){toast("Could not delete: "+((e&&e.message)||"try again"));return false}}
+  items=items.filter(x=>x.id!==id);saveLocal();render();return true;
+}
+
+/* ---------- pipeline rendering ---------- */
+function filtered(){
+  const q=ui.q.trim().toLowerCase();
+  return items.filter(it=>(!ui.track||it.track===ui.track)&&(!ui.country||it.country===ui.country)&&(!q||[it.company,it.role,it.city,it.notes,it.nextNote].join(" ").toLowerCase().includes(q)));
+}
+function nextState(it){
+  if(!it.next||it.status==="closed")return"";
+  const d=daysUntil(it.next);
+  return d<0?"late":d<=3?"soon":"";
+}
+function sortForColumn(a,b){
+  const an=a.next||"9999",bn=b.next||"9999";
+  if(an!==bn)return an<bn?-1:1;
+  return (b.updated||"").localeCompare(a.updated||"");
+}
+function cardHtml(it){
+  const ns=nextState(it);
+  const stageOpts=options(STAGES.map(s=>[s.id,s.label]),it.status);
+  return `<article class="card" tabindex="0" draggable="true" data-id="${esc(it.id)}" style="--c:var(--st-${esc(it.status)})">
+    <div class="co"><span>${esc(it.company)}</span>${it.example?'<span class="ex">Example</span>':""}</div>
+    <div class="role${it.role?"":" none"}">${esc(it.role||"Role not picked yet")}</div>
+    <div class="meta">${it.country?`<span class="cc">${esc(it.country==="REMOTE"?"RMT":it.country)}</span>`:""}${it.city?esc(it.city):""}${it.track?` <span class="chip">${esc(it.track)}</span>`:""} <span class="visa ${VISA_CLASS[it.visa||"unknown"]}">${VISA_LABEL[it.visa||"unknown"]}</span></div>
+    ${it.status==="closed"&&it.outcome?`<div class="outcome">${esc(it.outcome)}</div>`:""}
+    ${it.next&&it.status!=="closed"?`<div class="next ${ns}">${esc(fmtDate(it.next))} · ${esc(it.nextNote||"Next step")}</div>`:""}
+    <select class="stage-sel" data-id="${esc(it.id)}" aria-label="Move ${esc(it.company)} to stage">${stageOpts}</select>
+  </article>`;
+}
+function renderBoard(list){
+  const el=$("#boardView");
+  el.innerHTML=`<div class="board">${STAGES.map(s=>{
+    const cards=list.filter(i=>i.status===s.id).sort(sortForColumn);
+    return `<div class="col" data-stage="${s.id}" style="--c:var(--st-${s.id})"><div class="col-h"><span>${s.label}</span><span class="n">${cards.length}</span></div>${cards.map(cardHtml).join("")||'<div class="empty-col">Nothing here</div>'}</div>`;
+  }).join("")}</div>`;
+}
+function renderList(list){
+  const rows=list.slice().sort((a,b)=>STAGE_IDX[a.status]-STAGE_IDX[b.status]||sortForColumn(a,b));
+  $("#listView").innerHTML=`<div class="tablewrap"><table><thead><tr><th>Company</th><th>Role</th><th>Track</th><th>Location</th><th>Stage</th><th>Applied</th><th>Next step</th><th>Visa</th><th>Posting</th></tr></thead><tbody>${
+    rows.map(it=>`<tr data-id="${esc(it.id)}"><td><b>${esc(it.company)}</b>${it.example?' <span class="ex">Example</span>':""}</td><td>${esc(it.role)}</td><td>${esc(it.track)}</td><td>${it.country?`<span class="cc">${esc(it.country==="REMOTE"?"RMT":it.country)}</span> `:""}${esc(it.city)}</td><td><span class="stage-tag" style="--c:var(--st-${esc(it.status)})">${esc((STAGES[STAGE_IDX[it.status]]||{}).label||it.status)}${it.status==="closed"&&it.outcome?" · "+esc(it.outcome):""}</span></td><td class="mono">${esc(fmtDate(it.applied))}</td><td><span class="mono">${esc(fmtDate(it.next))}</span> ${esc(it.nextNote)}</td><td><span class="visa ${VISA_CLASS[it.visa||"unknown"]}">${VISA_LABEL[it.visa||"unknown"]}</span></td><td>${it.url?`<a href="${esc(it.url)}" target="_blank" rel="noopener">Open ↗</a>`:""}</td></tr>`).join("")||'<tr><td colspan="9" class="muted">No applications match these filters.</td></tr>'
+  }</tbody></table></div>`;
+}
+function renderSummary(){
+  const counts=Object.fromEntries(STAGES.map(s=>[s.id,0]));
+  items.forEach(i=>{if(counts[i.status]!=null)counts[i.status]++});
+  const total=items.length||1;
+  $("#funnel").innerHTML=STAGES.map(s=>counts[s.id]?`<span style="width:${counts[s.id]/total*100}%;background:var(--st-${s.id})" title="${s.label}: ${counts[s.id]}"></span>`:"").join("");
+  $("#legend").innerHTML=STAGES.map(s=>`<span><i class="dot" style="background:var(--st-${s.id})"></i>${s.label} <b>${counts[s.id]}</b></span>`).join("");
+  const sent=items.filter(i=>(i.furthest||STAGE_IDX[i.status]||0)>=1&&i.status!=="wishlist");
+  const heard=sent.filter(i=>Math.max(i.furthest||0,i.status==="closed"?0:STAGE_IDX[i.status])>=2);
+  const active=items.filter(i=>["applied","screen","interview","offer"].includes(i.status)).length;
+  const rate=sent.length?Math.round(heard.length/sent.length*100)+"%":"–";
+  $("#stats").innerHTML=`<div class="stat"><div class="v">${sent.length}</div><div class="k">Applications sent</div></div><div class="stat"><div class="v">${active}</div><div class="k">In progress</div></div><div class="stat"><div class="v">${rate}</div><div class="k">Reached a screen or further</div></div>`;
+  const due=items.filter(i=>i.next&&i.status!=="closed").map(i=>({i,d:daysUntil(i.next)})).filter(x=>x.d<=14).sort((a,b)=>a.d-b.d).slice(0,6);
+  $("#due").innerHTML=due.length?due.map(({i,d})=>`<li data-id="${esc(i.id)}"><span class="when ${d<0?"late":d<=3?"soon":""}">${d<0?Math.abs(d)+"d late":d===0?"Today":d===1?"Tomorrow":fmtDate(i.next)}</span><span class="what"><div><b>${esc(i.company)}</b> · ${esc(i.nextNote||"Next step")}</div><div class="muted" style="font-size:12.5px">${esc(i.role)}</div></span></li>`).join(""):'<li style="cursor:default"><span class="when">—</span><span class="what muted">Nothing due in the next two weeks. Add a next-step date to an application to see it here.</span></li>';
+}
+function render(){
+  if(mode==="connecting")return;
+  const list=filtered();
+  renderSummary();
+  $("#n-pipeline").textContent=items.length;
+  $("#clearEx").hidden=!items.some(i=>i.example);
+  $("#boardView").hidden=ui.view!=="board";
+  $("#listView").hidden=ui.view!=="list";
+  $("#hint").hidden=ui.view!=="board";
+  if(ui.view==="board")renderBoard(list);else renderList(list);
+  renderEmployers();
+}
+
+/* ---------- stage changes ---------- */
+async function setStage(id,stage){
+  const it=items.find(x=>x.id===id);if(!it||it.status===stage)return;
+  const next=Object.assign({},it,{status:stage});
+  next.furthest=Math.max(it.furthest||0,stage==="closed"?0:STAGE_IDX[stage]);
+  if(stage!=="wishlist"&&stage!=="closed"&&!next.applied)next.applied=todayIso();
+  if(stage==="closed"&&!next.outcome)next.outcome="Rejected";
+  if(await putItem(next))toast(`${it.company} moved to ${STAGES[STAGE_IDX[stage]].label}`);
+}
+
+/* ---------- editor ---------- */
+let editing=null, delArmed=false;
+function openEditor(it){
+  editing=it?Object.assign({},it):{id:newId(),status:"wishlist",visa:"unknown",track:"SWE",country:""};
+  const isNew=!it||!items.some(x=>x.id===it.id);
+  $("#formTitle").textContent=isNew?"Add application":"Edit application";
+  $("#f-company").value=editing.company||"";
+  $("#f-role").value=editing.role||"";
+  $("#f-track").value=editing.track||"SWE";
+  $("#f-status").value=editing.status||"wishlist";
+  $("#f-country").value=editing.country||"";
+  $("#f-city").value=editing.city||"";
+  $("#f-outcome").value=editing.outcome||"Rejected";
+  $("#f-visa").value=editing.visa||"unknown";
+  $("#f-applied").value=editing.applied||"";
+  $("#f-next").value=editing.next||"";
+  $("#f-nextnote").value=editing.nextNote||"";
+  $("#f-salary").value=editing.salary||"";
+  $("#f-source").value=editing.source||"";
+  $("#f-url").value=editing.url||"";
+  $("#f-notes").value=editing.notes||"";
+  $("#outcomeField").hidden=editing.status!=="closed";
+  $("#delBtn").hidden=isNew;delArmed=false;$("#delBtn").textContent="Delete";
+  $("#modal").hidden=false;
+  setTimeout(()=>(editing.company?$("#f-role"):$("#f-company")).focus(),0);
+}
+function closeEditor(){$("#modal").hidden=true;editing=null}
+async function saveEditor(e){
+  e.preventDefault();
+  if(!editing)return;
+  const company=$("#f-company").value.trim();
+  if(!company){$("#f-company").focus();toast("Add a company name to save.");return}
+  const prev=items.find(x=>x.id===editing.id);
+  const status=$("#f-status").value;
+  const it=Object.assign({},editing,{
+    company,role:$("#f-role").value.trim(),track:$("#f-track").value,status,
+    country:$("#f-country").value,city:$("#f-city").value.trim(),
+    outcome:status==="closed"?$("#f-outcome").value:"",
+    visa:$("#f-visa").value,applied:$("#f-applied").value,next:$("#f-next").value,
+    nextNote:$("#f-nextnote").value.trim(),salary:$("#f-salary").value.trim(),
+    source:$("#f-source").value.trim(),url:$("#f-url").value.trim(),notes:$("#f-notes").value.trim()
+  });
+  it.furthest=Math.max((prev&&prev.furthest)||0,status==="closed"?0:STAGE_IDX[status]);
+  if(status!=="wishlist"&&status!=="closed"&&!it.applied)it.applied=todayIso();
+  if(prev&&prev.example)it.example=false;
+  if(await putItem(it)){closeEditor();toast(prev?"Saved":"Added "+company)}
+}
+
+/* ---------- export / import ---------- */
+async function offerFile(filename,text,mime){
+  let dl=null;
+  if(window.claude&&typeof window.claude.use==="function"){try{dl=await window.claude.use("downloads")}catch(e){dl=null}}
+  if(dl){
+    try{await dl.save({filename,data:text});toast("Saved "+filename)}
+    catch(e){if(!e||e.code!=="declined")toast("Could not save the file"+(e&&e.message?": "+e.message:""))}
+    return;
+  }
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(new Blob([text],{type:mime}));a.download=filename;
+  document.body.appendChild(a);a.click();
+  setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},0);
+}
+const FIELDS=["company","role","track","country","city","status","outcome","applied","next","nextNote","visa","salary","source","url","notes"];
+function toCsv(){
+  const q=v=>{v=String(v==null?"":v);return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v};
+  return [FIELDS.join(",")].concat(items.map(i=>FIELDS.map(f=>q(i[f])).join(","))).join("\n");
+}
+async function importJson(file){
+  let data;
+  try{data=JSON.parse(await file.text())}catch(e){toast("That file is not valid JSON.");return}
+  if(!Array.isArray(data)){toast("Expected a JSON list of applications, like the one Export JSON makes.");return}
+  let n=0;
+  for(const raw of data){
+    if(!raw||typeof raw!=="object"||!raw.company)continue;
+    const it={id:typeof raw.id==="string"&&/^[A-Za-z0-9_-]{1,60}$/.test(raw.id)?raw.id:newId()};
+    FIELDS.concat(["furthest","created"]).forEach(f=>{if(raw[f]!=null)it[f]=raw[f]});
+    if(!STAGE_IDX.hasOwnProperty(it.status))it.status="wishlist";
+    if(await putItem(it))n++;
+  }
+  toast(`Imported ${n} application${n===1?"":"s"}`);
+}
+
+/* ---------- employers ---------- */
+function renderEmployers(){
+  const q=($("#eq").value||"").trim().toLowerCase(), c=$("#eCountry").value, t=$("#eTag").value, k=$("#eKind").value;
+  const tracked=new Set(items.map(i=>(i.company||"").toLowerCase()));
+  const list=EMPLOYERS.filter(e=>(!c||e.cc.includes(c))&&(!t||e.tags.includes(t))&&(!k||e.kind===k)&&(!q||(e.name+" "+e.cities).toLowerCase().includes(q)));
+  $("#eCount").textContent=list.length+" of "+EMPLOYERS.length;
+  $("#n-employers").textContent=EMPLOYERS.length;
+  $("#empGrid").innerHTML=list.map(e=>{
+    const has=tracked.has(e.name.toLowerCase());
+    const gq=encodeURIComponent(`${e.name} careers software OR "machine learning" engineer Europe`);
+    return `<div class="emp"><div class="emp-h"><h3>${esc(e.name)}</h3><span class="kind">${esc(e.kind)}</span></div>
+      <div class="cities">${esc(e.cities)}</div>
+      <div class="tags">${e.tags.map(x=>`<span class="chip">${esc(x)}</span>`).join("")}<span class="visa ${e.visa?"v-yes":"v-unknown"}">${e.visa?"Known to sponsor":"Check sponsorship"}</span></div>
+      <div class="acts"><a class="btn small" href="${esc(e.url)}" target="_blank" rel="noopener">Careers ↗</a><a class="btn small" href="https://www.google.com/search?q=${gq}" target="_blank" rel="noopener">Find roles ↗</a>${has?'<span class="btn small" aria-disabled="true" style="cursor:default;color:var(--good)">✓ Tracking</span>':`<button class="btn small primary" data-track="${esc(e.name)}">+ Track</button>`}</div></div>`;
+  }).join("")||'<p class="muted">No employers match. Try a different country or focus.</p>';
+}
+
+/* ---------- search builder ---------- */
+function buildSearch(){
+  const role=$("#sCustom").value.trim()||$("#sRole").value;
+  const loc=LOCS[+$("#sLoc").value]||LOCS[0];
+  const week=$("#sWeek").checked, entry=$("#sEntry").checked, visa=$("#sVisa").checked, remote=$("#sRemote").checked;
+  const locName=loc[1], place=loc[0];
+  const extra=[entry?'(graduate OR junior OR "new grad")':"",visa?'"visa sponsorship"':"",remote?"remote":""].filter(Boolean).join(" ");
+  const gPlace=loc[3]?`"${place.replace(/ \(.*\)/,"")}"`:"Europe";
+  const g=(q)=>"https://www.google.com/search?q="+encodeURIComponent(q)+(week?"&tbs=qdr:w":"");
+  const phrase=`"${role}" ${gPlace} ${extra}`.replace(/\s+/g," ").trim();
+  $("#sPrev").textContent=phrase;
+
+  const li=new URL("https://www.linkedin.com/jobs/search/");
+  li.searchParams.set("keywords",role+(visa?" visa sponsorship":""));
+  li.searchParams.set("location",locName);
+  if(week)li.searchParams.set("f_TPR","r604800");
+  if(entry)li.searchParams.set("f_E","1,2");
+  if(remote)li.searchParams.set("f_WT","2");
+  const boards=[
+    ["LinkedIn Jobs",li.toString(),"Largest pool. Filters for date, level and remote are applied."],
+    ["Google Jobs","https://www.google.com/search?q="+encodeURIComponent(`${role} jobs ${place} ${remote?"remote":""}`)+"&ibp=htl;jobs","Collects postings from many boards and company sites."],
+    ["Welcome to the Jungle","https://www.welcometothejungle.com/en/jobs?query="+encodeURIComponent(role)+"&aroundQuery="+encodeURIComponent(locName),"Startups and scale-ups, strong in France, Spain, UK and Germany."]
+  ];
+  if(loc[2]){
+    const ind=new URL(`https://${loc[2]}.indeed.com/jobs`);
+    ind.searchParams.set("q",role+(entry?" junior":"")+(visa?" visa sponsorship":""));
+    ind.searchParams.set("l",remote?"remote":place.replace(/ \(.*\)/,""));
+    if(week)ind.searchParams.set("fromage","7");
+    boards.push([`Indeed ${loc[2].toUpperCase()}`,ind.toString(),"Local Indeed site for this country."]);
+  }
+  const ats=[
+    ["Greenhouse","site:job-boards.greenhouse.io OR site:boards.greenhouse.io","Used by most AI labs and US-style scale-ups."],
+    ["Lever","site:jobs.lever.co","Common with startups and fintech."],
+    ["Ashby","site:jobs.ashbyhq.com","Popular with newer AI startups."],
+    ["Workable","site:apply.workable.com","Many European SMEs and startups."],
+    ["Personio","site:jobs.personio.de OR site:jobs.personio.com","German and Austrian companies."],
+    ["SmartRecruiters","site:jobs.smartrecruiters.com","Larger enterprises across Europe."]
+  ].map(([n,s,d])=>[n,g(`${s} ${phrase}`),d]);
+  const niche=[
+    ["Relocate.me",g(`site:relocate.me ${phrase}`),"Jobs that come with relocation support."],
+    ["EuroTechJobs",g(`site:eurotechjobs.com ${phrase}`),"European tech roles, many open to non-locals."],
+    ["Arbeitnow",g(`site:arbeitnow.com ${phrase}`),"English-speaking roles in Germany, often with visa help."],
+    ["AI Jobs",g(`site:ai-jobs.net ${phrase}`),"ML, AI and data roles only."],
+    ["Hacker News: Who is hiring","https://hnhiring.com/","Monthly thread with direct founder contacts."],
+    ["Levels.fyi","https://www.levels.fyi/","Check pay by company, level and city before you negotiate."]
+  ];
+  const group=(title,sub,arr)=>`<div class="linkgroup"><div><h2>${title}</h2><p class="note" style="margin:2px 0 0">${sub}</p></div><div class="links">${arr.map(([n,u,d])=>`<a class="lk" href="${esc(u)}" target="_blank" rel="noopener"><b>${esc(n)}</b><span>${esc(d)}</span></a>`).join("")}</div></div>`;
+  $("#sOut").innerHTML=group("Job boards",`Searches for ${esc(role)} in ${esc(place)}.`,boards)
+    +group("Straight from company hiring pages","Google searches of the applicant systems companies post to. These often surface roles before the big boards do.",ats)
+    +group("Niche boards and tools","Smaller boards with relocation-friendly roles.",niche);
+}
+function renderCalendar(){
+  const m=new Date().getMonth();
+  let h='<div></div>'+MONTHS.map((x,i)=>`<div class="m${i===m?" now":""}">${x}</div>`).join("");
+  CAL.forEach(([label,s,e,cls])=>{
+    h+=`<div class="r">${label}</div>`;
+    for(let i=0;i<12;i++){const on=i>=s&&i<=e;h+=`<div class="c${on?" "+cls:""}${i===m?" now":""}"></div>`}
+  });
+  $("#cal").innerHTML=h;
+}
+
+/* ---------- visas ---------- */
+function renderVisas(){
+  $("#visaGrid").innerHTML=VISAS.map(v=>`<div class="vc"><div class="vc-h"><span class="cc">${v.cc}</span><h3>${esc(v.name)}</h3></div><ul>${v.routes.map(([n,d,u])=>`<li><a href="${esc(u)}" target="_blank" rel="noopener">${esc(n)}</a><p>${esc(d)}</p></li>`).join("")}</ul><div class="hubs"><b>Tech hubs:</b> ${esc(v.hubs)}</div></div>`).join("");
+}
+
+/* ---------- tabs ---------- */
+function showTab(tab){
+  ui.tab=tab;saveUi();
+  document.querySelectorAll(".tab").forEach(b=>b.setAttribute("aria-selected",String(b.dataset.tab===tab)));
+  ["pipeline","employers","search","visas"].forEach(t=>{$("#p-"+t).hidden=t!==tab});
+}
+
+/* ---------- wiring ---------- */
+function wire(){
+  const trackOpts=[["","All tracks"]].concat(TRACKS.map(t=>[t,t]));
+  const ccOpts=[["","All countries"]].concat(Object.entries(COUNTRIES));
+  $("#fTrack").innerHTML=options(trackOpts,ui.track);
+  $("#fCountry").innerHTML=options(ccOpts,ui.country);
+  $("#f-track").innerHTML=options(TRACKS.map(t=>[t,t]));
+  $("#f-status").innerHTML=options(STAGES.map(s=>[s.id,s.label]));
+  $("#f-country").innerHTML=options([["","Choose"]].concat(Object.entries(COUNTRIES)));
+  $("#eCountry").innerHTML=options(ccOpts);
+  $("#eTag").innerHTML=options([["","All focus areas"]].concat(["SWE","SDE","ML","AI research","Data","Infra","Quant dev","Hardware","Security"].map(t=>[t,t])));
+  $("#eKind").innerHTML=options([["","All types"]].concat(["Big tech","AI lab","Scale-up","Enterprise","Hardware","Quant"].map(t=>[t,t])));
+  $("#sRole").innerHTML=options(ROLES.map(([r])=>[r,r]),"Machine Learning Engineer");
+  $("#sLoc").innerHTML=LOCS.map((l,i)=>`<option value="${i}"${l[0]==="London"?" selected":""}>${l[3]&&l[1].includes(",")?" ":""}${esc(l[0])}</option>`).join("");
+
+  document.querySelectorAll(".tab").forEach(b=>b.addEventListener("click",()=>showTab(b.dataset.tab)));
+  $("#q").addEventListener("input",e=>{ui.q=e.target.value;render()});
+  $("#fTrack").addEventListener("change",e=>{ui.track=e.target.value;saveUi();render()});
+  $("#fCountry").addEventListener("change",e=>{ui.country=e.target.value;saveUi();render()});
+  const setView=v=>{ui.view=v;saveUi();$("#vBoard").setAttribute("aria-pressed",String(v==="board"));$("#vList").setAttribute("aria-pressed",String(v==="list"));render()};
+  $("#vBoard").addEventListener("click",()=>setView("board"));
+  $("#vList").addEventListener("click",()=>setView("list"));
+  setView(ui.view==="list"?"list":"board");
+  $("#addBtn").addEventListener("click",()=>openEditor(null));
+  $("#expCsv").addEventListener("click",()=>offerFile("job-applications.csv",toCsv(),"text/csv"));
+  $("#expJson").addEventListener("click",()=>offerFile("job-applications.json",JSON.stringify(items.map(i=>Object.assign({},i)),null,2),"application/json"));
+  $("#impFile").addEventListener("change",e=>{const f=e.target.files[0];if(f)importJson(f);e.target.value=""});
+  $("#clearEx").addEventListener("click",async()=>{for(const it of items.filter(i=>i.example))await removeItem(it.id);toast("Examples removed")});
+
+  // board interactions (delegated)
+  const openById=id=>{const it=items.find(x=>x.id===id);if(it)openEditor(it)};
+  document.addEventListener("change",e=>{if(e.target.classList.contains("stage-sel"))setStage(e.target.dataset.id,e.target.value)});
+  $("#boardView").addEventListener("click",e=>{if(e.target.closest("select"))return;const c=e.target.closest(".card");if(c)openById(c.dataset.id)});
+  $("#listView").addEventListener("click",e=>{if(e.target.closest("a"))return;const r=e.target.closest("tr[data-id]");if(r)openById(r.dataset.id)});
+  $("#due").addEventListener("click",e=>{const li=e.target.closest("li[data-id]");if(li)openById(li.dataset.id)});
+  $("#boardView").addEventListener("keydown",e=>{if(e.key==="Enter"&&e.target.classList.contains("card"))openById(e.target.dataset.id)});
+  let dragId=null;
+  $("#boardView").addEventListener("dragstart",e=>{const c=e.target.closest(".card");if(!c)return;dragId=c.dataset.id;c.classList.add("dragging");try{e.dataTransfer.setData("text/plain",dragId);e.dataTransfer.effectAllowed="move"}catch(_){}});
+  $("#boardView").addEventListener("dragend",e=>{const c=e.target.closest(".card");if(c)c.classList.remove("dragging");document.querySelectorAll(".col.drop").forEach(x=>x.classList.remove("drop"))});
+  $("#boardView").addEventListener("dragover",e=>{const col=e.target.closest(".col");if(!col||!dragId)return;e.preventDefault();document.querySelectorAll(".col.drop").forEach(x=>{if(x!==col)x.classList.remove("drop")});col.classList.add("drop")});
+  $("#boardView").addEventListener("drop",e=>{const col=e.target.closest(".col");if(!col||!dragId)return;e.preventDefault();col.classList.remove("drop");const id=dragId;dragId=null;setStage(id,col.dataset.stage)});
+
+  // editor
+  $("#form").addEventListener("submit",saveEditor);
+  $("#cancelBtn").addEventListener("click",closeEditor);
+  $("#closeX").addEventListener("click",closeEditor);
+  $("#modal").addEventListener("click",e=>{if(e.target.id==="modal")closeEditor()});
+  document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("#modal").hidden)closeEditor()});
+  $("#f-status").addEventListener("change",e=>{$("#outcomeField").hidden=e.target.value!=="closed"});
+  $("#delBtn").addEventListener("click",async()=>{
+    if(!editing)return;
+    if(!delArmed){delArmed=true;$("#delBtn").textContent="Click again to delete";return}
+    const name=editing.company;
+    if(await removeItem(editing.id)){closeEditor();toast("Deleted "+name)}
+  });
+
+  // employers
+  ["#eq","#eCountry","#eTag","#eKind"].forEach(s=>$(s).addEventListener(s==="#eq"?"input":"change",renderEmployers));
+  $("#empGrid").addEventListener("click",e=>{
+    const b=e.target.closest("[data-track]");if(!b)return;
+    const emp=EMPLOYERS.find(x=>x.name===b.dataset.track);if(!emp)return;
+    const cc=emp.cc[0];
+    const firstCity=emp.cities.split(" · ")[0].replace(/ \(.*\)/,"");
+    const trackGuess={"SDE":"SDE","ML":"ML Engineer","AI research":"Research Eng","Quant dev":"Quant Dev","Infra":"Infra / SRE","Data":"Data / MLOps"}[emp.tags[0]]||"SWE";
+    openEditor({id:newId(),company:emp.name,role:"",track:trackGuess,country:cc,city:/remote/i.test(firstCity)?"":firstCity,status:"wishlist",visa:emp.visa?"yes":"unknown",url:emp.url,source:"Employer list"});
+  });
+
+  // search
+  ["#sRole","#sLoc","#sWeek","#sEntry","#sVisa","#sRemote"].forEach(s=>$(s).addEventListener("change",buildSearch));
+  $("#sCustom").addEventListener("input",buildSearch);
+}
+
+/* ---------- boot ---------- */
+async function boot(){
+  wire();
+  showTab(["pipeline","employers","search","visas"].includes(ui.tab)?ui.tab:"pipeline");
+  renderEmployers();buildSearch();renderCalendar();renderVisas();
+  let db=null;
+  if(window.claude&&typeof window.claude.use==="function"){
+    setPill("Connecting");
+    try{db=await window.claude.use("db")}catch(e){db=null}
+  }
+  if(db){
+    mode="db";col=db.collection("applications");
+    setPill("Synced to your account","ok");
+    col.onSnapshot(snap=>{items=snap.docs.map(d=>Object.assign({},d.data(),{id:d.id}));render()},
+      err=>{setPill("Sync stopped. Reload to reconnect","bad");toast("Lost connection to saved applications.")});
+  }else{
+    mode="local";items=loadLocal();
+    setPill("Saved in this browser");
+    render();
+  }
+}
+boot();
+})();
+</script>
