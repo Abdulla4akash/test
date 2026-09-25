@@ -103,7 +103,9 @@ def test_shipped_registry_is_valid():
     assert len({b.id for b in shipped}) == len(shipped)
     for board in shipped:
         assert boards.validate_board(board) == []
-        assert board.token_status == "unverified"
+        assert board.token_status in {"verified", "unverified"}
+        if board.token_status == "verified":
+            assert board.checked_on
         assert board.ats in registry()
 
 

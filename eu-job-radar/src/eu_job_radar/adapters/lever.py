@@ -11,6 +11,7 @@ from . import (
     Adapter,
     Board,
     BoardResult,
+    clean_text,
     iso_from_millis,
     posting,
     quarantine,
@@ -40,7 +41,7 @@ class LeverAdapter(Adapter):
             if not isinstance(item, dict):
                 quarantine(result, "item is not an object", {})
                 continue
-            if not valid_id(item.get("id")) or not item.get("text"):
+            if not valid_id(item.get("id")) or not clean_text(item.get("text")):
                 quarantine(result, "missing id or title", item)
                 continue
             categories = item.get("categories") if isinstance(item.get("categories"), dict) else {}

@@ -6,7 +6,17 @@ states how many jobs the board holds, so a short list is reported as partial.
 Job descriptions are not requested (`content` is left off).
 """
 
-from . import Adapter, Board, BoardResult, iso_text, posting, quarantine, token_path, valid_id
+from . import (
+    Adapter,
+    Board,
+    BoardResult,
+    clean_text,
+    iso_text,
+    posting,
+    quarantine,
+    token_path,
+    valid_id,
+)
 
 
 class GreenhouseAdapter(Adapter):
@@ -25,7 +35,7 @@ class GreenhouseAdapter(Adapter):
             if not isinstance(item, dict):
                 quarantine(result, "item is not an object", {})
                 continue
-            if not valid_id(item.get("id")) or not item.get("title"):
+            if not valid_id(item.get("id")) or not clean_text(item.get("title")):
                 quarantine(result, "missing id or title", item)
                 continue
             location = item.get("location") or {}

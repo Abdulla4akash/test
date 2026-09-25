@@ -17,6 +17,7 @@ Outcomes:
 """
 
 import json
+import math
 import re
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
@@ -39,6 +40,7 @@ class Board:
     token_status: str = "unverified"
     origin: str = "registry"  # registry | workspace
     synthetic: bool = False
+    checked_on: str | None = None
 
 
 @dataclass
@@ -50,20 +52,28 @@ class BoardResult:
 
     @property
     def inventory_complete(self) -> bool:
-        return self.outcome in {"complete", "empty"}
+        ids = [p["source_record_id"] for p in self.postings]
+        return (
+            self.outcome in {"complete", "empty"}
+            and not self.quarantined
+            and len(ids) == len(set(ids))
+        )
 
 
 def clean_text(value) -> str | None:
-    if value is None:
+    if not isinstance(value, str):
         return None
-    text = re.sub(r"\s+", " ", str(value)).strip()
+    text = re.sub(r"\s+", " ", value).strip()
     return text[:300] or None
 
 
 def clean_url(value) -> str | None:
     if not isinstance(value, str):
         return None
-    parts = urlsplit(value.strip())
+    try:
+        parts = urlsplit(value.strip())
+    except ValueError:
+        return None
     if parts.scheme != "https" or not parts.netloc or "@" in parts.netloc:
         return None
     return value.strip()[:1000]
@@ -72,11 +82,16 @@ def clean_url(value) -> str | None:
 def iso_from_millis(value) -> str | None:
     if not isinstance(value, int | float) or isinstance(value, bool) or value <= 0:
         return None
-    return (
-        datetime.fromtimestamp(value / 1000, UTC)
-        .isoformat(timespec="seconds")
-        .replace("+00:00", "Z")
-    )
+    try:
+        if not math.isfinite(value):
+            return None
+        return (
+            datetime.fromtimestamp(value / 1000, UTC)
+            .isoformat(timespec="seconds")
+            .replace("+00:00", "Z")
+        )
+    except (OverflowError, OSError, ValueError):
+        return None
 
 
 def iso_text(value) -> str | None:
@@ -122,6 +137,13 @@ class Adapter:
             result = self.parse(data, board)
         except (KeyError, TypeError, ValueError, AttributeError) as exc:
             return BoardResult("parse_failed", f"unexpected {self.label} response shape: {exc}")
+        seen = set()
+        for item in result.postings:
+            if item["source_record_id"] in seen:
+                quarantine(
+                    result, "duplicate id in board response", {"id": item["source_record_id"]}
+                )
+            seen.add(item["source_record_id"])
         if result.outcome == "complete" and result.quarantined:
             result.outcome = "partial"
             result.detail = (

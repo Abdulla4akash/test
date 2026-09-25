@@ -5,7 +5,33 @@ department, team, isRemote, employmentType, publishedAt, jobUrl and isListed.
 Unlisted jobs (isListed false) are skipped: the company has not published them.
 """
 
-from . import Adapter, Board, BoardResult, iso_text, posting, quarantine, token_path, valid_id
+from . import (
+    Adapter,
+    Board,
+    BoardResult,
+    clean_text,
+    iso_text,
+    posting,
+    quarantine,
+    token_path,
+    valid_id,
+)
+
+
+def _location(name, address) -> str | None:
+    """Keep each display location together with its own structured address.
+
+    Live responses nest secondary addresses under postalAddress, while the
+    public documentation also describes a flat secondary address object.
+    """
+    address = address if isinstance(address, dict) else {}
+    address = address.get("postalAddress", address)
+    address = address if isinstance(address, dict) else {}
+    parts = [clean_text(name)]
+    parts += [
+        clean_text(address.get(k)) for k in ("addressLocality", "addressRegion", "addressCountry")
+    ]
+    return ", ".join(dict.fromkeys(p for p in parts if p)) or None
 
 
 class AshbyAdapter(Adapter):
@@ -26,20 +52,13 @@ class AshbyAdapter(Adapter):
                 continue
             if item.get("isListed") is False:
                 continue
-            if not valid_id(item.get("id")) or not item.get("title"):
+            if not valid_id(item.get("id")) or not clean_text(item.get("title")):
                 quarantine(result, "missing id or title", item)
                 continue
-            names = [item.get("location")]
+            names = [_location(item.get("location"), item.get("address"))]
             for extra in item.get("secondaryLocations") or []:
                 if isinstance(extra, dict):
-                    names.append(extra.get("location"))
-            address = (
-                ((item.get("address") or {}).get("postalAddress") or {})
-                if isinstance(item.get("address"), dict)
-                else {}
-            )
-            if isinstance(address, dict) and address.get("addressCountry"):
-                names.append(address.get("addressCountry"))
+                    names.append(_location(extra.get("location"), extra.get("address")))
             result.postings.append(
                 posting(
                     record_id=item["id"],

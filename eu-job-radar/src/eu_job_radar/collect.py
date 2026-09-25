@@ -25,6 +25,9 @@ TIMER = None
 
 DEFAULT_BUDGET = 80
 CACHE_RETENTION_DAYS = 2.0
+# Lever and Ashby include descriptions in their unpaginated public boards.
+# Keep a finite bound while accommodating boards that exceed the HTML default.
+BOARD_MAX_BYTES = 20_000_000
 
 
 class CollectError(RuntimeError):
@@ -115,7 +118,9 @@ def run(session, ids: list[str], *, all_enabled: bool = False, budget: int = DEF
                 (session.now_iso, budget, json.dumps([b.id for b in chosen])),
             ).lastrowid
         client = fetch.HttpClient(
-            policy=fetch.FetchPolicy(user_agent=fetch.user_agent(_contact(session))),
+            policy=fetch.FetchPolicy(
+                user_agent=fetch.user_agent(_contact(session)), max_bytes=BOARD_MAX_BYTES
+            ),
             transport=TRANSPORT_FACTORY() if TRANSPORT_FACTORY else None,
             resolver=RESOLVER,
             timer=TIMER,

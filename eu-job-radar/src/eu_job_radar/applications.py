@@ -121,7 +121,7 @@ def decide(session, ref: str, decision: str, *, note: str | None = None) -> None
     if current and current["decision"] == "promoted":
         raise UserError(
             f"already promoted to {current['application_id']}; use "
-            f"`job-radar app status {current['application_id']} not_applying` instead"
+            f"`job-radar app-status {current['application_id']} not_applying` instead"
         )
     with db.transaction(conn):
         conn.execute(
@@ -166,7 +166,7 @@ def add_manual(session, *, company, title, url=None, status="to_apply", note=Non
             "INSERT INTO applications (id, company, title, url, status, notes, applied_at,"
             " created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
             (app_id, company.strip(), title.strip(), url, status, note,
-             session.today if status != "to_apply" else None, now, now),
+             session.today if status == "applied" else None, now, now),
         )  # fmt: skip
         _history(conn, now, field="application", new=status, application_id=app_id,
                  note="added by hand")  # fmt: skip

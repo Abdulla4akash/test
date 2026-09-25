@@ -51,7 +51,7 @@ from urllib.parse import urljoin, urlsplit
 from . import __version__, robots
 from .clock import iso
 
-PROJECT_URL = "https://github.com/Abdulla4akash/eu-job-radar"
+PROJECT_URL = "https://github.com/Abdulla4akash/test/tree/main/eu-job-radar"
 ALLOWED_PORTS = {"http": 80, "https": 443}
 REDIRECT_STATUSES = {301, 302, 303, 307, 308}
 RETRY_STATUSES = {429, 500, 502, 503, 504}

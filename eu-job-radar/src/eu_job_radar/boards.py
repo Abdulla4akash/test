@@ -35,6 +35,7 @@ def shipped() -> list[Board]:
                 careers=raw.get("careers"),
                 region=raw.get("region"),
                 token_status=raw.get("token_status", "unverified"),
+                checked_on=raw.get("checked_on"),
             )
         )
     return boards

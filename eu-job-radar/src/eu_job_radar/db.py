@@ -230,7 +230,12 @@ MIGRATIONS = {
 def check_schema(conn: sqlite3.Connection) -> None:
     """Open a workspace, migrating an older schema forward in one transaction."""
     row = conn.execute("SELECT value FROM meta WHERE key = 'schema_version'").fetchone()
-    version = int(row[0]) if row else None
+    try:
+        version = int(row[0]) if row else None
+    except (TypeError, ValueError):
+        raise SchemaError("workspace has an invalid schema version") from None
+    if version is not None and version < SCHEMA_VERSION and version not in MIGRATIONS:
+        raise SchemaError(f"no migration from workspace schema version {version}")
     if version is not None and version < SCHEMA_VERSION:
         with transaction(conn):
             while version < SCHEMA_VERSION:
@@ -273,26 +278,43 @@ class UserStateWrite(sqlite3.DatabaseError):
     pass
 
 
+_COLLECTION_GUARDS = {}
+
+
 @contextmanager
 def collected_state_only(conn: sqlite3.Connection):
     """Refuse any write to a user-owned table while collection runs."""
-    denied: list[str] = []
+    previous = _COLLECTION_GUARDS.get(conn)
+    denied: list[str] = previous if previous is not None else []
 
     def authorizer(action, arg1, arg2, dbname, source):
+        denied.clear()
         writes = {sqlite3.SQLITE_INSERT, sqlite3.SQLITE_UPDATE, sqlite3.SQLITE_DELETE}
-        if action in writes and arg1 in USER_TABLES:
-            denied.append(arg1)
+        table = arg2 if action == sqlite3.SQLITE_ALTER_TABLE else arg1
+        changes_table = action in {
+            sqlite3.SQLITE_ALTER_TABLE,
+            sqlite3.SQLITE_DROP_TABLE,
+            sqlite3.SQLITE_CREATE_TABLE,
+        }
+        if (action in writes or changes_table) and (table or "").casefold() in USER_TABLES:
+            denied.append(table)
             return sqlite3.SQLITE_DENY
         return sqlite3.SQLITE_OK
 
-    conn.set_authorizer(authorizer)
+    if previous is None:
+        _COLLECTION_GUARDS[conn] = denied
+        conn.set_authorizer(authorizer)
     try:
         yield conn
     except sqlite3.DatabaseError as exc:
         if denied:
+            table = denied.pop()
+            denied.clear()
             raise UserStateWrite(
-                f"collection tried to write user-owned table {denied[0]}; refused"
+                f"collection tried to write user-owned table {table}; refused"
             ) from exc
         raise
     finally:
-        conn.set_authorizer(None)
+        if previous is None:
+            conn.set_authorizer(None)
+            del _COLLECTION_GUARDS[conn]

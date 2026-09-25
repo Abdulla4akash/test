@@ -6,10 +6,10 @@
 #               been fetched. A wrong token shows as "board not found (404)" in
 #               `job-radar boards` after the first collection; fix or disable it.
 #   verified    a fetch on `checked_on` returned a readable board.
-# Every entry below is unverified: the environment this registry was written
-# in had no internet access (2026-09-25). Add your own boards with
-# `job-radar boards add --url <careers board URL>`; they are stored in your
-# workspace, not here.
+# All retained boards returned readable inventories on 2026-09-25.
+# DeepMind now uses Google Careers; Plaid and Mistral moved to Ashby.
+# See docs/sources.md for the full check log. Add boards with
+# `job-radar boards-add --url <careers board URL>` in your workspace.
 
 [[boards]]
 id = "anthropic"
@@ -18,16 +18,8 @@ ats = "greenhouse"
 token = "anthropic"
 kind = "AI lab"
 careers = "https://www.anthropic.com/careers"
-token_status = "unverified"
-
-[[boards]]
-id = "google-deepmind"
-company = "Google DeepMind"
-ats = "greenhouse"
-token = "deepmind"
-kind = "AI lab"
-careers = "https://deepmind.google/about/careers/"
-token_status = "unverified"
+token_status = "verified"
+checked_on = "2026-09-25"
 
 [[boards]]
 id = "openai"
@@ -36,7 +28,8 @@ ats = "ashby"
 token = "openai"
 kind = "AI lab"
 careers = "https://openai.com/careers/"
-token_status = "unverified"
+token_status = "verified"
+checked_on = "2026-09-25"
 
 [[boards]]
 id = "cohere"
@@ -45,7 +38,8 @@ ats = "ashby"
 token = "cohere"
 kind = "AI lab"
 careers = "https://cohere.com/careers"
-token_status = "unverified"
+token_status = "verified"
+checked_on = "2026-09-25"
 
 [[boards]]
 id = "elevenlabs"
@@ -54,7 +48,8 @@ ats = "ashby"
 token = "elevenlabs"
 kind = "AI lab"
 careers = "https://elevenlabs.io/careers"
-token_status = "unverified"
+token_status = "verified"
+checked_on = "2026-09-25"
 
 [[boards]]
 id = "synthesia"
@@ -63,7 +58,8 @@ ats = "ashby"
 token = "synthesia"
 kind = "AI lab"
 careers = "https://www.synthesia.io/careers"
-token_status = "unverified"
+token_status = "verified"
+checked_on = "2026-09-25"
 
 [[boards]]
 id = "poolside"
@@ -72,16 +68,18 @@ ats = "ashby"
 token = "poolside"
 kind = "AI lab"
 careers = "https://poolside.ai/careers"
-token_status = "unverified"
+token_status = "verified"
+checked_on = "2026-09-25"
 
 [[boards]]
 id = "mistral"
 company = "Mistral AI"
-ats = "lever"
-token = "mistral"
+ats = "ashby"
+token = "mistral.ai"
 kind = "AI lab"
 careers = "https://mistral.ai/careers"
-token_status = "unverified"
+token_status = "verified"
+checked_on = "2026-09-25"
 
 [[boards]]
 id = "wayve"
@@ -90,7 +88,8 @@ ats = "greenhouse"
 token = "wayve"
 kind = "AI lab"
 careers = "https://wayve.ai/careers/"
-token_status = "unverified"
+token_status = "verified"
+checked_on = "2026-09-25"
 
 [[boards]]
 id = "helsing"
@@ -99,7 +98,8 @@ ats = "greenhouse"
 token = "helsing"
 kind = "AI lab"
 careers = "https://helsing.ai/careers"
-token_status = "unverified"
+token_status = "verified"
+checked_on = "2026-09-25"
 
 [[boards]]
 id = "isomorphic-labs"
@@ -108,7 +108,8 @@ ats = "greenhouse"
 token = "isomorphiclabs"
 kind = "AI lab"
 careers = "https://www.isomorphiclabs.com/careers"
-token_status = "unverified"
+token_status = "verified"
+checked_on = "2026-09-25"
 
 [[boards]]
 id = "lovable"
@@ -117,7 +118,8 @@ ats = "ashby"
 token = "lovable"
 kind = "Scale-up"
 careers = "https://lovable.dev/careers"
-token_status = "unverified"
+token_status = "verified"
+checked_on = "2026-09-25"
 
 [[boards]]
 id = "stripe"
@@ -126,7 +128,8 @@ ats = "greenhouse"
 token = "stripe"
 kind = "Scale-up"
 careers = "https://stripe.com/jobs"
-token_status = "unverified"
+token_status = "verified"
+checked_on = "2026-09-25"
 
 [[boards]]
 id = "databricks"
@@ -135,7 +138,8 @@ ats = "greenhouse"
 token = "databricks"
 kind = "Scale-up"
 careers = "https://www.databricks.com/company/careers"
-token_status = "unverified"
+token_status = "verified"
+checked_on = "2026-09-25"
 
 [[boards]]
 id = "datadog"
@@ -144,7 +148,8 @@ ats = "greenhouse"
 token = "datadog"
 kind = "Enterprise"
 careers = "https://careers.datadoghq.com/"
-token_status = "unverified"
+token_status = "verified"
+checked_on = "2026-09-25"
 
 [[boards]]
 id = "cloudflare"
@@ -153,7 +158,8 @@ ats = "greenhouse"
 token = "cloudflare"
 kind = "Enterprise"
 careers = "https://www.cloudflare.com/careers/"
-token_status = "unverified"
+token_status = "verified"
+checked_on = "2026-09-25"
 
 [[boards]]
 id = "elastic"
@@ -162,7 +168,8 @@ ats = "greenhouse"
 token = "elastic"
 kind = "Enterprise"
 careers = "https://www.elastic.co/careers"
-token_status = "unverified"
+token_status = "verified"
+checked_on = "2026-09-25"
 
 [[boards]]
 id = "gitlab"
@@ -171,7 +178,8 @@ ats = "greenhouse"
 token = "gitlab"
 kind = "Remote-first"
 careers = "https://about.gitlab.com/jobs/"
-token_status = "unverified"
+token_status = "verified"
+checked_on = "2026-09-25"
 
 [[boards]]
 id = "grafana-labs"
@@ -180,7 +188,8 @@ ats = "greenhouse"
 token = "grafanalabs"
 kind = "Remote-first"
 careers = "https://grafana.com/about/careers/"
-token_status = "unverified"
+token_status = "verified"
+checked_on = "2026-09-25"
 
 [[boards]]
 id = "canonical"
@@ -189,7 +198,8 @@ ats = "greenhouse"
 token = "canonical"
 kind = "Remote-first"
 careers = "https://canonical.com/careers"
-token_status = "unverified"
+token_status = "verified"
+checked_on = "2026-09-25"
 
 [[boards]]
 id = "figma"
@@ -198,7 +208,8 @@ ats = "greenhouse"
 token = "figma"
 kind = "Scale-up"
 careers = "https://www.figma.com/careers/"
-token_status = "unverified"
+token_status = "verified"
+checked_on = "2026-09-25"
 
 [[boards]]
 id = "miro"
@@ -207,7 +218,8 @@ ats = "greenhouse"
 token = "realtimeboardglobal"
 kind = "Scale-up"
 careers = "https://miro.com/careers/"
-token_status = "unverified"
+token_status = "verified"
+checked_on = "2026-09-25"
 
 [[boards]]
 id = "monzo"
@@ -216,7 +228,8 @@ ats = "greenhouse"
 token = "monzo"
 kind = "Scale-up"
 careers = "https://monzo.com/careers"
-token_status = "unverified"
+token_status = "verified"
+checked_on = "2026-09-25"
 
 [[boards]]
 id = "n26"
@@ -225,7 +238,8 @@ ats = "greenhouse"
 token = "n26"
 kind = "Scale-up"
 careers = "https://n26.com/en/careers"
-token_status = "unverified"
+token_status = "verified"
+checked_on = "2026-09-25"
 
 [[boards]]
 id = "celonis"
@@ -234,7 +248,8 @@ ats = "greenhouse"
 token = "celonis"
 kind = "Scale-up"
 careers = "https://careers.celonis.com/"
-token_status = "unverified"
+token_status = "verified"
+checked_on = "2026-09-25"
 
 [[boards]]
 id = "spotify"
@@ -243,7 +258,8 @@ ats = "lever"
 token = "spotify"
 kind = "Scale-up"
 careers = "https://www.lifeatspotify.com/jobs"
-token_status = "unverified"
+token_status = "verified"
+checked_on = "2026-09-25"
 
 [[boards]]
 id = "palantir"
@@ -252,16 +268,18 @@ ats = "lever"
 token = "palantir"
 kind = "Enterprise"
 careers = "https://www.palantir.com/careers/"
-token_status = "unverified"
+token_status = "verified"
+checked_on = "2026-09-25"
 
 [[boards]]
 id = "plaid"
 company = "Plaid"
-ats = "lever"
+ats = "ashby"
 token = "plaid"
 kind = "Scale-up"
 careers = "https://plaid.com/careers/"
-token_status = "unverified"
+token_status = "verified"
+checked_on = "2026-09-25"
 
 [[boards]]
 id = "linear"
@@ -270,7 +288,8 @@ ats = "ashby"
 token = "linear"
 kind = "Remote-first"
 careers = "https://linear.app/careers"
-token_status = "unverified"
+token_status = "verified"
+checked_on = "2026-09-25"
 
 [[boards]]
 id = "posthog"
@@ -279,7 +298,8 @@ ats = "ashby"
 token = "posthog"
 kind = "Remote-first"
 careers = "https://posthog.com/careers"
-token_status = "unverified"
+token_status = "verified"
+checked_on = "2026-09-25"
 
 [[boards]]
 id = "supabase"
@@ -288,7 +308,8 @@ ats = "ashby"
 token = "supabase"
 kind = "Remote-first"
 careers = "https://supabase.com/careers"
-token_status = "unverified"
+token_status = "verified"
+checked_on = "2026-09-25"
 
 [[boards]]
 id = "hudson-river-trading"
@@ -297,7 +318,8 @@ ats = "greenhouse"
 token = "wehrtyou"
 kind = "Quant"
 careers = "https://www.hudsonrivertrading.com/careers/"
-token_status = "unverified"
+token_status = "verified"
+checked_on = "2026-09-25"
 
 [[boards]]
 id = "jump-trading"
@@ -306,7 +328,8 @@ ats = "greenhouse"
 token = "jumptrading"
 kind = "Quant"
 careers = "https://www.jumptrading.com/careers/"
-token_status = "unverified"
+token_status = "verified"
+checked_on = "2026-09-25"
 
 [[boards]]
 id = "imc"
@@ -315,4 +338,5 @@ ats = "greenhouse"
 token = "imc"
 kind = "Quant"
 careers = "https://www.imc.com/eu/careers"
-token_status = "unverified"
+token_status = "verified"
+checked_on = "2026-09-25"
