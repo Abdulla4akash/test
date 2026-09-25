@@ -48,6 +48,9 @@ _ALIASES = {
     "norge": "NO", "osterreich": "AT", "österreich": "AT", "schweiz": "CH", "suisse": "CH",
     "svizzera": "CH", "polska": "PL", "czech republic": "CZ", "italia": "IT", "eire": "IE",
     "republic of ireland": "IE", "uae": "AE", "korea": "KR", "republic of korea": "KR",
+    "gbr": "GB", "can": "CA", "deu": "DE", "fra": "FR", "nld": "NL",
+    "irl": "IE", "che": "CH", "swe": "SE",
+    "ontario": "CA", "quebec": "CA", "british columbia": "CA", "alberta": "CA",
 }  # fmt: skip
 
 # Cities that identify a country on their own. A few names are shared with
@@ -93,7 +96,7 @@ _CITIES = {
     "MT": "valletta",
     "US": "new york nyc san francisco seattle boston austin chicago los angeles "
     "mountain view palo alto menlo park sunnyvale redmond denver atlanta washington dc "
-    "bay area san jose san diego pittsburgh",
+    "bay area san jose san diego pittsburgh detroit bellevue",
     "CA": "toronto montreal montréal vancouver waterloo ottawa calgary",
     "IN": "bangalore bengaluru hyderabad pune mumbai delhi gurgaon gurugram noida chennai",
     "SG": "singapore",
@@ -111,7 +114,7 @@ _US_STATES = (
     "georgia hawaii idaho illinois indiana iowa kansas kentucky louisiana maine maryland "
     "massachusetts michigan minnesota mississippi missouri montana nebraska nevada "
     "ohio oklahoma oregon pennsylvania tennessee texas utah vermont virginia wisconsin "
-    "wyoming"
+    "wyoming washington"
 ).split()
 _US_STATE_CODES = set(
     "AL AK AZ AR CA CO CT DE FL HI ID IL IN IA KS KY LA ME MD MA MI MN MS MO MT NE NV NH NJ "
@@ -121,8 +124,7 @@ _US_STATE_CODES = set(
 REGION_WORDS = {
     "europe": "europe", "european union": "europe", "eu": "europe", "eea": "europe",
     "emea": "emea", "dach": "europe", "nordics": "europe", "benelux": "europe",
-    "cet": "europe", "cest": "europe", "gmt": "europe",
-    "americas": "americas", "north america": "americas", "latam": "americas",
+    "americas": "americas", "amer": "americas", "north america": "americas", "latam": "americas",
     "apac": "apac", "asia": "apac", "worldwide": "worldwide", "anywhere": "worldwide",
     "global": "worldwide",
 }  # fmt: skip
@@ -170,6 +172,7 @@ def _split_cities(text: str) -> list[str]:
 
 
 _PHRASES = _build_phrases()
+_CITY_NAMES = {_fold(city) for cities in _CITIES.values() for city in _split_cities(cities)}
 _AMBIGUOUS_CITIES = {
     "cambridge", "birmingham", "paris", "london", "reading", "bath", "york", "manchester",
     "dublin", "athens", "valencia", "toledo", "berlin", "hamburg", "vienna", "florence",
@@ -204,7 +207,7 @@ def _find(text: str, phrase: str) -> bool:
     return re.search(rf"(?<![\w]){re.escape(phrase)}(?![\w])", text) is not None
 
 
-_SEPARATORS = re.compile(r"\s*(?:;|\||•|\n|\s/\s|\bor\b)\s*")
+_SEPARATORS = re.compile(r"\s*(?:;|\||•|\n|/|\bor\b)\s*", re.I)
 
 
 def read(text: str | None) -> Place:
@@ -215,6 +218,22 @@ def read(text: str | None) -> Place:
     parts = [part for part in _SEPARATORS.split(text) if part and part.strip()]
     if len(parts) > 1:
         return read_all(parts)
+    # Separate comma-delimited city lists before resolving US/Canadian
+    # qualifiers, so "New York, NY, London" keeps both countries.
+    comma_parts = text.split(",")
+    groups = []
+    current = comma_parts[0]
+    for part in comma_parts[1:]:
+        if _fold(part.strip()) in _CITY_NAMES and _fold(part.strip()) not in {
+            "singapore",
+            "hong kong",
+        }:
+            groups.append(current)
+            current = part
+        else:
+            current += "," + part
+    if groups:
+        return read_all(groups + [current])
     return _read_one(text)
 
 
@@ -233,11 +252,24 @@ def _read_one(text: str) -> Place:
         if _find(remaining, word):
             place.regions.add(region)
             place.countries |= REGION_COUNTRIES.get(word, set())
+    if re.search(r",\s*(ON|QC|BC|AB|NS|NB|PE|MB)(?:\s*(?:,|$))", text):
+        place.countries.add("CA")
     # Two-letter codes, only in upper case in the original text ("London, GB",
     # "Austin, TX"), so ordinary words are never read as codes.
     for token in re.findall(r"\b[A-Z]{2}\b", text):
         if token == "UK":
             place.countries.add("GB")
+        elif token in COUNTRY_NAMES and text.strip() == token:
+            place.countries.add(token)
+        elif token in _US_STATE_CODES and "US" in place.countries:
+            continue  # e.g. DE means Delaware in an explicitly US address
+        elif token == "CA" and "CA" in place.countries:
+            continue
+        elif (
+            token in {"ON", "QC", "BC", "AB", "NS", "NB", "NL", "PE", "SK", "MB"}
+            and "CA" in place.countries
+        ):
+            continue
         elif token in _US_STATE_CODES and token not in EUROPE:
             place.countries.add("US")
         elif token in COUNTRY_NAMES and token not in {"IN", "IT"}:
@@ -245,7 +277,9 @@ def _read_one(text: str) -> Place:
             place.countries.add(token)
     # A city name shared with North America ("Cambridge, MA", "London, ON")
     # counts only when nothing in the text names a North American place.
-    if not place.countries & {"US", "CA"}:
+    if not place.countries & {"US", "CA"} and not (
+        _find(folded, "cambridge") and not place.countries
+    ):
         place.countries |= ambiguous
     if not place.known:
         leftover = re.sub(r"[\W\d_]+", " ", remaining).strip()

@@ -82,6 +82,27 @@ FAMILY_LABELS = {key: label for key, label, _ in FAMILIES}
 FAMILY_LABELS["other_eng"] = "Other engineering"
 _FAMILY_RE = [(key, re.compile(pattern, re.I)) for key, _, pattern in FAMILIES]
 _ENGINEERING = re.compile(r"\b(engineer|engineering|developer|scientist|programmer)\b", re.I)
+_SOFTWARE_ROLE = re.compile(
+    r"\b(?:software|back[- ]?end|front[- ]?end|full[- ]?stack|machine learning|ml|ai|data"
+    r"|research|platform|infrastructure|systems?|microservices|core) (?:engineer(?:ing)?|developer|scientist)\b"
+    r"|\b(?:swe|sde|mle)\b|\bmember of (?:the )?technical staff\b",
+    re.I,
+)
+_NON_ENGINEERING_ROLE = re.compile(
+    r"\b(?:sales engineer|solutions? (?:engineer|architect|consultant)|customer engineer"
+    r"|(?:applied )?(?:\(ai\) )?value engineer|deployment strategist|(?:ai|ml) (?:trainer|tutor|designer|strategist)"
+    r"|data annotator|recruiter|recruiting|talent|account (?:executive|manager)|customer success"
+    r"|(?:product|program|project|operations) manager|(?:product|ux|ui|visual) designer"
+    r"|counsel|paralegal|accountant|financial analyst|executive assistant)\b",
+    re.I,
+)
+_TECH_ROLE = re.compile(
+    r"\b(?:swe|sde|mle|sre|devops|mlops|researcher|quant|quantitative trader)\b"
+    r"|\b(?:ai|ml|machine learning|software|data|research) (?:research )?intern(?:ship)?\b"
+    r"|\bfellows? program\b"
+    r"|\bmember of (?:the )?technical staff\b",
+    re.I,
+)
 
 # Titles that are not engineering work even when they contain an
 # engineering word ("Sales Engineer", "Engineering Recruiter").
@@ -229,13 +250,22 @@ def _strings(value, name, errors) -> list[str]:
 
 
 def families(title: str) -> list[str]:
+    if not (_ENGINEERING.search(title) or _TECH_ROLE.search(title)):
+        return []
     found = [key for key, pattern in _FAMILY_RE if pattern.search(title)]
+    if (
+        re.search(r"\b(?:microservices engineer|core developer)\b", title, re.I)
+        and "swe" not in found
+    ):
+        found.append("swe")
     if not found and _ENGINEERING.search(title):
         found = ["other_eng"]
     return found
 
 
 def seniority(title: str) -> str:
+    # This is a research job title, not a statement of staff-level seniority.
+    title = re.sub(r"\bmember of (the )?technical staff\b", "research engineer", title, flags=re.I)
     for key, pattern in _SENIORITY_RE:
         if pattern.search(title):
             return key
@@ -243,6 +273,11 @@ def seniority(title: str) -> str:
 
 
 def not_engineering(title: str) -> str | None:
+    role = _NON_ENGINEERING_ROLE.search(title)
+    if role:
+        return role.group(0)
+    if _SOFTWARE_ROLE.search(title):
+        return None  # e.g. Software Engineer, Content is an engineering function
     match = _NOT_ENGINEERING.search(title)
     return match.group(0) if match else None
 
@@ -296,13 +331,17 @@ def screen(posting: dict, prefs: Preferences) -> Verdict:
     open_regions = place.regions & {"europe", "emea", "worldwide"}
     if matched:
         notes.append("location: " + ", ".join(locations.label(c) for c in matched))
-    elif place.remote and open_regions and prefs.remote_europe:
+    elif place.remote and open_regions and prefs.remote_europe and not place.countries:
         notes.append("location: remote, open to " + ", ".join(sorted(open_regions)))
     elif place.remote and not place.known:
         check.append("remote, but the posting does not say which countries it hires in")
     elif not place.known:
         shown = "; ".join(posting.get("locations") or []) or "none given"
         check.append(f"location not readable ({shown})")
+    elif place.unread:
+        check.append(
+            "some alternative locations are not readable (" + "; ".join(place.unread) + ")"
+        )
     else:
         where = sorted(place.countries) or sorted(place.regions)
         outside.append("location outside your countries (" + ", ".join(where) + ")")

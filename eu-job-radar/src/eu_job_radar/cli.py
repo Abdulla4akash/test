@@ -91,6 +91,8 @@ def cmd_boards(args) -> int:
             + (f", region {board.region}" if board.region else "")
         )
         print(f"  from:       {board.origin}; token {board.token_status}")
+        if board.checked_on:
+            print(f"  verified:   {board.checked_on}")
         print(f"  enabled:    {'yes' if enabled else 'no'}" + (f" ({note})" if note else ""))
         if board.careers:
             print(f"  careers:    {board.careers}")
@@ -259,7 +261,7 @@ def cmd_promote(args) -> int:
     session = _session(args)
     app_id = applications.promote(session, args.posting, note=args.note)
     print(
-        f'Added to your queue as {app_id}. Next: `job-radar app next {app_id} "..." --due YYYY-MM-DD`.'
+        f'Added to your queue as {app_id}. Next: `job-radar app-next {app_id} "..." --due YYYY-MM-DD`.'
     )
     return 0
 
@@ -326,7 +328,7 @@ def cmd_queue(args) -> int:
     rows = views.queue(session, show_all=args.all)
     if not rows:
         print(
-            "Your queue is empty. Promote postings from `job-radar inbox`, or `job-radar app add`."
+            "Your queue is empty. Promote postings from `job-radar inbox`, or `job-radar app-add`."
         )
         return 0
     for row in rows:
@@ -405,6 +407,8 @@ def cmd_windows(args) -> int:
                 print(_wrap(f"note: {claim.note}"))
             if claim.source:
                 print(f"    source: {claim.source}")
+            if claim.checked_on:
+                print(f"    checked: {claim.checked_on}")
         if w.pattern:
             print(_wrap(f"usual pattern (not a date): {w.pattern}"))
         return 0
@@ -462,7 +466,10 @@ def cmd_deadlines(args) -> int:
         left = d["days_left"]
         when = "today" if left == 0 else f"{left} day(s) ago" if left < 0 else f"in {left} day(s)"
         print(f"  {d['date']}  {d['event']:<20} {d['what']}  — {when}")
-        if d["basis"] != "current_cycle_announcement":
+        if d["basis"] == "current_cycle_announcement":
+            print(_wrap(d["detail"], indent="              "))
+            print(f"              {d['page'] or 'see programme page'}")
+        else:
             print(
                 f"              {BASIS_MARK.get(d['basis'], d['basis'])}; check {d['page'] or 'the page'}"
             )

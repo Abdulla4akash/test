@@ -13,6 +13,7 @@ INBOX_VIEWS = {
     "later": "kept for later",
     "dismissed": "dismissed",
     "outside": "ruled out by your preferences, with the reason (audit)",
+    "check": "needs a manual check; not yet decided",
     "missing": "no longer listed on its board",
     "all": "every stored posting",
 }
@@ -29,6 +30,8 @@ def inbox(session, *, view="relevant", country=None, family=None, company=None, 
           limit=None) -> list[dict]:  # fmt: skip
     if view not in INBOX_VIEWS:
         raise applications.UserError(f"unknown view {view!r}; choose from {', '.join(INBOX_VIEWS)}")
+    if limit is not None and limit < 0:
+        raise applications.UserError("--limit must be zero or greater")
     prefs = session.preferences()
     conn = session.conn
     rows = conn.execute(
@@ -51,6 +54,7 @@ def inbox(session, *, view="relevant", country=None, family=None, company=None, 
             "later": decided == "later",
             "dismissed": decided == "dismissed",
             "outside": listed and verdict.status == "outside" and not decided,
+            "check": listed and verdict.status == "check" and not decided,
             "missing": not listed,
             "all": True,
         }[view]
@@ -71,7 +75,7 @@ def inbox(session, *, view="relevant", country=None, family=None, company=None, 
         ):
             continue
         out.append(item)
-    return out[:limit] if limit else out
+    return out[:limit] if limit is not None else out
 
 
 def _after(stamp: str, threshold_iso: str) -> bool:
