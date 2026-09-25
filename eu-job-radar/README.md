@@ -7,13 +7,48 @@ rules: it reads public sources only when you ask, keeps a dated history of
 every change it sees, keeps what it collects apart from what you decide, and
 never sends email or submits applications.
 
-Status: **Chunk 1.** Live collection from company job boards through the
+Status: **Chunk 1 and hiring windows.** Live collection from company job boards through the
 public APIs of three applicant tracking systems (Greenhouse, Lever and
 Ashby), a rules-only screen against your preferences, a discovery inbox, an
-application queue with tasks and next steps, CSV/JSON export and an offline
-demo. Nothing is scheduled. See [the roadmap](docs/roadmap.md) for what
+application queue with tasks, next steps and deadlines, a registry of
+internship and graduate windows at the largest employers, CSV/JSON export
+and an offline demo. Nothing is scheduled. See [the roadmap](docs/roadmap.md) for what
 follows and [docs/sources.md](docs/sources.md) for what is known about each
 API.
+
+## Deadline first
+
+| Programme | Closes | Basis |
+|---|---|---|
+| Google, Software Engineering Intern (EMEA) | **7 Oct 2026** | reported by the owner on 2026-09-25; **not checked** on Google's page (which internship, time and timezone unknown) |
+| 21 other big-tech, quant and graduate programmes | unknown | no official page read yet |
+
+`job-radar deadlines` lists every dated deadline, soonest first, with its
+basis. Check the official page before relying on a reported date.
+
+## Top companies: hiring windows
+
+Google, Meta, Amazon, Microsoft, Apple, Bloomberg, Palantir, Stripe and the
+trading firms (Jane Street, Optiver, IMC, Citadel, HRT, Jump, G-Research,
+XTX) either have no public job API or hire students through yearly
+programmes, so the radar tracks their **internship and graduate windows**
+(`src/eu_job_radar/data/windows.toml`) the way eu-phd-radar tracks ELLIS
+and IMPRS. Each opening and closing date carries a basis: *announced*
+(read on the official page, with the wording quoted), *reported by the
+owner*, *reported by you*, or *unknown*. Only an announcement counts as a
+fixed deadline, and a "usually opens in autumn" pattern never becomes a
+date.
+
+```sh
+job-radar windows                                   # all programmes and what is known
+job-radar windows google-swe-intern                 # page, dates, basis, usual pattern
+job-radar windows-report jane-street-intern --closes 2026-11-01 \
+    --source https://www.janestreet.com/join-jane-street/
+job-radar windows-track google-swe-intern           # into your queue, deadline included
+job-radar deadlines --days 45                       # soonest first
+job-radar windows-check                             # re-read pages; compares quoted wording only
+job-radar app-deadline a-9f8e7d 2026-10-30          # a deadline for any application
+```
 
 ## Why company boards
 

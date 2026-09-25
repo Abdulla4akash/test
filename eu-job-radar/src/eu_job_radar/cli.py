@@ -6,7 +6,7 @@ import sys
 import textwrap
 from pathlib import Path
 
-from . import __version__, applications, boards, collect, views, workspace
+from . import __version__, applications, boards, collect, views, windows, workspace
 from .applications import STATUSES, UserError
 from .db import SchemaError
 from .screening import FAMILY_LABELS, SENIORITY_LABELS, PreferencesError
@@ -29,6 +29,7 @@ def main(argv: list[str] | None = None) -> int:
         boards.BoardError,
         collect.CollectError,
         SchemaError,
+        windows.WindowError,
     ) as exc:
         print(f"job-radar: {exc}", file=sys.stderr)
         return 2
@@ -332,6 +333,10 @@ def cmd_queue(args) -> int:
         due = row["earliest_due"]
         flag = " OVERDUE" if row["overdue"] else " due soon" if row["due_soon"] else ""
         print(f"{row['id']}  {STATUSES[row['status']]:<14} {row['company']} — {row['title']}")
+        if row["deadline"]:
+            basis = row["deadline_basis"] or "user_reported"
+            label = "" if basis == "current_cycle_announcement" else f" [{basis.replace('_', ' ')}]"
+            print(f"    deadline: {row['deadline']}{label}")
         if row["next_action"]:
             print(
                 f"    next: {row['next_action']}"
@@ -370,6 +375,104 @@ def cmd_export(args) -> int:
             views.to_csv(data["relevant_postings"], views.POSTING_FIELDS), encoding="utf-8"
         )
         print(f"Wrote {apps}\nWrote {posts}")
+    return 0
+
+
+# --- hiring windows and deadlines -----------------------------------------------------------
+
+BASIS_MARK = {
+    "current_cycle_announcement": "announced",
+    "owner_reported": "reported by owner, unchecked",
+    "user_reported": "reported by you, unchecked",
+    "not_yet_verified": "unknown",
+}
+
+
+def cmd_windows(args) -> int:
+    session = _session(args)
+    conn = session.conn
+    if args.window:
+        w = windows.get(conn, args.window)
+        print(f"{w.company}: {w.programme}  [{w.id}]")
+        print(f"  cycle:    {w.cycle or '-'} · {w.kind} · {w.where or '-'}")
+        print(f"  page:     {w.page}")
+        print(f"  opens:    {w.opens.describe()}")
+        print(f"  closes:   {w.closes.describe()}")
+        for claim in (w.opens, w.closes):
+            if claim.wording:
+                print(_wrap(f'quoted: "{claim.wording}"'))
+            if claim.note:
+                print(_wrap(f"note: {claim.note}"))
+            if claim.source:
+                print(f"    source: {claim.source}")
+        if w.pattern:
+            print(_wrap(f"usual pattern (not a date): {w.pattern}"))
+        return 0
+    rows = windows.all_windows(conn)
+    if args.kind:
+        rows = [w for w in rows if w.kind == args.kind]
+    print(f"{'WINDOW':<36} {'COMPANY':<24} {'CLOSES':<12} BASIS")
+    for w in rows:
+        print(f"{w.id:<36} {w.company[:24]:<24} {w.closes.date or '?':<12} "
+              f"{BASIS_MARK[w.closes.basis]}")  # fmt: skip
+    print(f"\n{len(rows)} windows. `job-radar windows <id>` for the page and usual pattern;")
+    print("`job-radar windows-report <id> --closes YYYY-MM-DD --source URL` when you find a date.")
+    return 0
+
+
+def cmd_windows_report(args) -> int:
+    session = _session(args)
+    windows.report(session, args.window, closes=args.closes, opens=args.opens, time=args.time,
+                   timezone=args.timezone, source=args.source, note=args.note,
+                   company=args.company, programme=args.programme, page=args.page,
+                   kind=args.kind, cycle=args.cycle)  # fmt: skip
+    print(f"Recorded for {args.window}, labelled as reported by you until checked on the page.")
+    return 0
+
+
+def cmd_windows_track(args) -> int:
+    session = _session(args)
+    app_id = applications.track_window(session, args.window, note=args.note)
+    print(f"Added to your queue as {app_id}.")
+    return 0
+
+
+def cmd_windows_check(args) -> int:
+    session = _session(args)
+    results = windows.check_pages(session, args.windows or None, budget=args.budget)
+    for r in results:
+        print(f"  {r.window.id:<36} {r.status:<10} {r.detail}")
+    print(
+        "This compares quoted wording only; it never changes a date. Update the registry by hand."
+    )
+    return 0
+
+
+def cmd_deadlines(args) -> int:
+    session = _session(args)
+    rows = windows.deadlines(session, days=args.days, include_unknown=args.unknown)
+    if not rows:
+        print(f"No dated deadlines in the next {args.days} days. `job-radar windows` shows what is"
+              " still unknown.")  # fmt: skip
+        return 0
+    for d in rows:
+        if d["date"] is None:
+            print(f"  ?           {d['what']}  (closing date unknown; {d['detail']})")
+            continue
+        left = d["days_left"]
+        when = "today" if left == 0 else f"{left} day(s) ago" if left < 0 else f"in {left} day(s)"
+        print(f"  {d['date']}  {d['event']:<20} {d['what']}  — {when}")
+        if d["basis"] != "current_cycle_announcement":
+            print(
+                f"              {BASIS_MARK.get(d['basis'], d['basis'])}; check {d['page'] or 'the page'}"
+            )
+    return 0
+
+
+def cmd_app_deadline(args) -> int:
+    session = _session(args)
+    applications.set_deadline(session, args.app, args.date or None, note=args.note)
+    print(f"Deadline for {args.app} {'set' if args.date else 'cleared'}.")
     return 0
 
 
@@ -484,6 +587,35 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--kind", default="other", choices=sorted(applications.TASK_KINDS))
     p.add_argument("--due")
     add("task-done", cmd_task_done, "mark a task done").add_argument("task", type=int)
+    p = add("windows", cmd_windows, "internship and graduate programmes at large employers")
+    p.add_argument("window", nargs="?")
+    p.add_argument("--kind", choices=sorted(windows.KINDS))
+    p = add("windows-report", cmd_windows_report, "record a date you found for a window")
+    p.add_argument("window", help="a window id, or a new id for a programme not listed")
+    p.add_argument("--closes", help="YYYY-MM-DD")
+    p.add_argument("--opens", help="YYYY-MM-DD")
+    p.add_argument("--time", help="HH:MM, if the page states one")
+    p.add_argument("--timezone", help="as the page states it, e.g. BST, CET, AoE")
+    p.add_argument("--source", help="where you read it")
+    p.add_argument("--note")
+    p.add_argument("--company", help="new windows only")
+    p.add_argument("--programme", help="new windows only")
+    p.add_argument("--page", help="new windows only: the official page")
+    p.add_argument("--kind", default="internship", choices=sorted(windows.KINDS))
+    p.add_argument("--cycle", help="e.g. 2027")
+    p = add("windows-track", cmd_windows_track, "put a window in your application queue")
+    p.add_argument("window")
+    p.add_argument("--note")
+    p = add("windows-check", cmd_windows_check, "re-read windows' official pages (network)")
+    p.add_argument("windows", nargs="*")
+    p.add_argument("--budget", type=int, default=30)
+    p = add("deadlines", cmd_deadlines, "dated deadlines and openings, soonest first")
+    p.add_argument("--days", type=int, default=60)
+    p.add_argument("--unknown", action="store_true", help="also list windows with no known date")
+    p = add("app-deadline", cmd_app_deadline, 'set (or clear with "") an application deadline')
+    p.add_argument("app")
+    p.add_argument("date")
+    p.add_argument("--note")
     p = add("export", cmd_export, "write applications and relevant postings to CSV or JSON")
     p.add_argument("--format", choices=["csv", "json"], default="csv")
     p.add_argument("--out", help="directory (default: the workspace's exports/)")

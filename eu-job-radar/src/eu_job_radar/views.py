@@ -106,7 +106,8 @@ def queue(session, *, show_all=False) -> list[dict]:
     rows = applications.application_rows(session.conn, active_only=not show_all)
     today = session.today
     for row in rows:
-        due_dates = [d for d in [row["next_due"]] + [t["due"] for t in row["open_tasks"]] if d]
+        due_dates = [row["next_due"], row["deadline"]] + [t["due"] for t in row["open_tasks"]]
+        due_dates = [d for d in due_dates if d]
         row["earliest_due"] = min(due_dates) if due_dates else None
         row["overdue"] = bool(row["earliest_due"] and row["earliest_due"] < today)
         row["due_soon"] = bool(
@@ -122,7 +123,7 @@ def queue(session, *, show_all=False) -> list[dict]:
 
 # --- exports --------------------------------------------------------------------------
 
-APP_FIELDS = ["id", "company", "title", "status", "applied_at", "next_action", "next_due", "url",
+APP_FIELDS = ["id", "deadline", "deadline_basis", "company", "title", "status", "applied_at", "next_action", "next_due", "url",
               "posting_id", "posting_state", "notes", "created_at", "updated_at"]  # fmt: skip
 POSTING_FIELDS = ["short_id", "company", "title", "locations", "countries", "families",
                   "seniority", "screen", "reasons", "url", "state", "first_seen_at"]  # fmt: skip

@@ -309,3 +309,47 @@ def application_rows(conn, *, active_only: bool):
         ]
         out.append(item)
     return out
+
+
+def set_deadline(session, app_id: str, deadline: str | None, *, note: str | None = None) -> None:
+    """Record the date by which you must apply (your own reading)."""
+    conn = session.conn
+    app = find_application(conn, app_id)
+    deadline = check_date(deadline, "deadline") if deadline else None
+    with db.transaction(conn):
+        conn.execute(
+            "UPDATE applications SET deadline = ?, deadline_basis = ?, updated_at = ? WHERE id = ?",
+            (deadline, "user_reported" if deadline else None, session.now_iso, app_id),
+        )
+        _history(conn, session.now_iso, field="deadline", old=app["deadline"], new=deadline,
+                 application_id=app_id, note=note)  # fmt: skip
+
+
+def track_window(session, window_id: str, *, note: str | None = None) -> str:
+    """Put a hiring window in your queue. Its closing date, if one is known,
+    becomes the application deadline with the same basis, so a reported date
+    stays labelled as reported."""
+    from . import windows
+
+    conn = session.conn
+    window = windows.get(conn, window_id)
+    existing = conn.execute(
+        "SELECT id FROM applications WHERE window_id = ?", (window_id,)
+    ).fetchone()
+    if existing:
+        raise UserError(f"already in your queue as {existing[0]}")
+    now = session.now_iso
+    app_id = _new_app_id(conn)
+    closes = window.closes if window.closes.dated else None
+    with db.transaction(conn):
+        conn.execute(
+            "INSERT INTO applications (id, company, title, url, status, notes, deadline,"
+            " deadline_basis, window_id, created_at, updated_at)"
+            " VALUES (?, ?, ?, ?, 'to_apply', ?, ?, ?, ?, ?, ?)",
+            (app_id, window.company, window.programme, window.page, note,
+             closes.date if closes else None, closes.basis if closes else None, window_id,
+             now, now),
+        )  # fmt: skip
+        _history(conn, now, field="application", new="to_apply", application_id=app_id,
+                 note=f"from window {window_id}")  # fmt: skip
+    return app_id

@@ -39,3 +39,12 @@ The 34 shipped boards in `src/eu_job_radar/data/boards.toml` are all
 `unverified`. A wrong token returns HTTP 404 and shows as `not_found` in
 `job-radar boards`; nothing else happens. After a live run, mark the tokens
 that returned a readable board as `verified` and note the date here.
+
+## Hiring windows
+
+`src/eu_job_radar/data/windows.toml` lists 22 programmes with their official
+pages. None was read (no internet on 2026-09-25), so every date is either
+`not_yet_verified` or, for Google's Software Engineering Intern (EMEA),
+`owner_reported` 2026-10-07 from the owner's message of 2026-09-25. Upgrade a
+claim to `current_cycle_announcement` only with wording quoted from the
+page and the date you read it.

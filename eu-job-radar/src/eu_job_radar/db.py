@@ -15,9 +15,9 @@ import sqlite3
 from contextlib import contextmanager
 from pathlib import Path
 
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = 2
 
-USER_TABLES = {"applications", "tasks", "triage", "local_boards", "board_settings"}
+USER_TABLES = {"applications", "tasks", "triage", "local_boards", "board_settings", "local_windows"}
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS meta (key TEXT PRIMARY KEY, value TEXT NOT NULL);
@@ -58,8 +58,26 @@ CREATE TABLE IF NOT EXISTS applications (
     next_due TEXT,
     notes TEXT,
     applied_at TEXT,
+    deadline TEXT,
+    deadline_basis TEXT,
+    window_id TEXT,
     created_at TEXT NOT NULL,
     updated_at TEXT NOT NULL
+);
+CREATE TABLE IF NOT EXISTS local_windows (
+    id TEXT PRIMARY KEY,
+    company TEXT NOT NULL,
+    programme TEXT NOT NULL,
+    kind TEXT NOT NULL,
+    cycle TEXT,
+    page TEXT NOT NULL,
+    opens_date TEXT,
+    closes_date TEXT,
+    closes_time TEXT,
+    timezone TEXT,
+    source TEXT,
+    note TEXT,
+    reported_at TEXT NOT NULL
 );
 CREATE TABLE IF NOT EXISTS tasks (
     id INTEGER PRIMARY KEY,
@@ -198,13 +216,36 @@ def _statements(script: str) -> list[str]:
     return [part.strip() for part in "\n".join(lines).split(";") if part.strip()]
 
 
+# Each migration takes a workspace from version N to N + 1.
+MIGRATIONS = {
+    1: [
+        "ALTER TABLE applications ADD COLUMN deadline TEXT",
+        "ALTER TABLE applications ADD COLUMN deadline_basis TEXT",
+        "ALTER TABLE applications ADD COLUMN window_id TEXT",
+        # local_windows is created by the schema script below.
+    ],
+}
+
+
 def check_schema(conn: sqlite3.Connection) -> None:
+    """Open a workspace, migrating an older schema forward in one transaction."""
     row = conn.execute("SELECT value FROM meta WHERE key = 'schema_version'").fetchone()
     version = int(row[0]) if row else None
+    if version is not None and version < SCHEMA_VERSION:
+        with transaction(conn):
+            while version < SCHEMA_VERSION:
+                for statement in MIGRATIONS[version]:
+                    conn.execute(statement)
+                version += 1
+            for statement in _statements(SCHEMA):
+                conn.execute(statement)  # CREATE ... IF NOT EXISTS: adds new tables only
+            conn.execute(
+                "UPDATE meta SET value = ? WHERE key = 'schema_version'", (str(SCHEMA_VERSION),)
+            )
     if version != SCHEMA_VERSION:
         raise SchemaError(
             f"workspace schema version {version}, this tool expects {SCHEMA_VERSION}; "
-            "no migration exists yet"
+            "update eu-job-radar to open it"
         )
 
 

@@ -1,0 +1,332 @@
+# Internship and graduate programmes at large employers that have no public
+# job-board API. Each record holds claims about opening and closing dates,
+# each with a basis, exactly like eu-phd-radar's calls.toml:
+#
+#   current_cycle_announcement  read on the official page for this cycle,
+#                               with `wording` quoted from it. Only these are
+#                               shown as fixed deadlines.
+#   owner_reported              a date the repository owner reported. Shown,
+#                               clearly labelled, until someone reads it on
+#                               the official page and upgrades the basis.
+#   not_yet_verified            no date found; stays unknown.
+#
+# `pattern` describes what usually happens. It is never a date and never
+# becomes one. A past cycle's date is never copied into a new cycle.
+# `job-radar windows check` re-reads the pages and reports whether each
+# quoted wording is still there; it never edits this file.
+#
+# Written 2026-09-25 without internet access: no page below was read, so no
+# entry has a current_cycle_announcement yet.
+
+registry_version = 1
+
+[[windows]]
+id = "google-swe-intern"
+cycle = "2027"
+company = "Google"
+programme = "Software Engineering Intern (EMEA)"
+kind = "internship"
+where = "UK, IE, CH, DE, PL, FR"
+page = "https://www.google.com/about/careers/applications/students/"
+pattern = "Summer internships usually open in late summer or autumn of the year before and can close early once roles fill."
+[windows.opens]
+basis = "not_yet_verified"
+[windows.closes]
+basis = "owner_reported"
+date = "2026-10-07"
+reported_on = "2026-09-25"
+note = "The owner said: 'google has a internship deadline at 7 october'. Which Google internship, the time and the timezone were not stated. Read the official page and upgrade this claim."
+
+[[windows]]
+id = "google-step-intern"
+cycle = "2027"
+company = "Google"
+programme = "STEP Intern (first- and second-year students)"
+kind = "internship"
+where = "EMEA"
+page = "https://www.google.com/about/careers/applications/students/"
+pattern = "STEP usually opens in autumn and runs for a short window."
+[windows.opens]
+basis = "not_yet_verified"
+[windows.closes]
+basis = "not_yet_verified"
+
+[[windows]]
+id = "google-deepmind-student-researcher"
+cycle = "2027"
+company = "Google DeepMind"
+programme = "Student Researcher / Research Engineering Intern"
+kind = "internship"
+where = "UK, CH, FR"
+page = "https://deepmind.google/about/careers/"
+pattern = "Student roles are posted through the year; some open in autumn for the next summer."
+[windows.opens]
+basis = "not_yet_verified"
+[windows.closes]
+basis = "not_yet_verified"
+
+[[windows]]
+id = "meta-swe-intern"
+cycle = "2027"
+company = "Meta"
+programme = "Software Engineer Intern / University Grad (London)"
+kind = "internship"
+where = "UK, IE"
+page = "https://www.metacareers.com/"
+pattern = "Intern and grad roles usually open in autumn and are rolling."
+[windows.opens]
+basis = "not_yet_verified"
+[windows.closes]
+basis = "not_yet_verified"
+
+[[windows]]
+id = "amazon-sde-intern"
+cycle = "2027"
+company = "Amazon"
+programme = "SDE Intern / SDE Graduate (EU and UK)"
+kind = "internship"
+where = "UK, IE, DE, LU, ES"
+page = "https://www.amazon.jobs/"
+pattern = "Student programmes usually open in late summer and autumn; many are rolling."
+[windows.opens]
+basis = "not_yet_verified"
+[windows.closes]
+basis = "not_yet_verified"
+
+[[windows]]
+id = "microsoft-intern"
+cycle = "2027"
+company = "Microsoft"
+programme = "Software Engineering / Research Intern (UK and EU)"
+kind = "internship"
+where = "UK, IE, CZ, CH"
+page = "https://careers.microsoft.com/"
+pattern = "Intern roles usually open in autumn; Microsoft Research internships follow their own calendar."
+[windows.opens]
+basis = "not_yet_verified"
+[windows.closes]
+basis = "not_yet_verified"
+
+[[windows]]
+id = "apple-intern"
+cycle = "2027"
+company = "Apple"
+programme = "Internships (Europe)"
+kind = "internship"
+where = "UK, DE, CH, IE, ES"
+page = "https://jobs.apple.com/"
+pattern = "Student roles are posted through the year."
+[windows.opens]
+basis = "not_yet_verified"
+[windows.closes]
+basis = "not_yet_verified"
+
+[[windows]]
+id = "bloomberg-swe-intern"
+cycle = "2027"
+company = "Bloomberg"
+programme = "Software Engineer Intern / New Grad (London)"
+kind = "internship"
+where = "UK"
+page = "https://www.bloomberg.com/company/careers/"
+pattern = "Usually opens late summer, rolling review."
+[windows.opens]
+basis = "not_yet_verified"
+[windows.closes]
+basis = "not_yet_verified"
+
+[[windows]]
+id = "palantir-intern"
+cycle = "2027"
+company = "Palantir"
+programme = "Software Engineer Intern / New Grad (London)"
+kind = "internship"
+where = "UK"
+page = "https://www.palantir.com/careers/"
+pattern = "Rolling."
+[windows.opens]
+basis = "not_yet_verified"
+[windows.closes]
+basis = "not_yet_verified"
+
+[[windows]]
+id = "stripe-intern"
+cycle = "2027"
+company = "Stripe"
+programme = "Software Engineering Intern / New Grad (Dublin, London)"
+kind = "internship"
+where = "IE, UK"
+page = "https://stripe.com/jobs"
+pattern = "Usually opens in autumn, rolling."
+[windows.opens]
+basis = "not_yet_verified"
+[windows.closes]
+basis = "not_yet_verified"
+
+[[windows]]
+id = "jane-street-intern"
+cycle = "2027"
+company = "Jane Street"
+programme = "Software Engineer / Quant Intern (London, Amsterdam)"
+kind = "internship"
+where = "UK, NL"
+page = "https://www.janestreet.com/join-jane-street/"
+pattern = "Usually opens in summer for the next summer; rolling, early applications advised."
+[windows.opens]
+basis = "not_yet_verified"
+[windows.closes]
+basis = "not_yet_verified"
+
+[[windows]]
+id = "optiver-intern"
+cycle = "2027"
+company = "Optiver"
+programme = "Software Engineer / Trader Intern and Graduate (Amsterdam, London)"
+kind = "internship"
+where = "NL, UK"
+page = "https://optiver.com/working-at-optiver/career-opportunities/"
+pattern = "Usually opens in summer; rolling."
+[windows.opens]
+basis = "not_yet_verified"
+[windows.closes]
+basis = "not_yet_verified"
+
+[[windows]]
+id = "imc-intern"
+cycle = "2027"
+company = "IMC Trading"
+programme = "Software Engineer / Quant Intern and Graduate (Amsterdam)"
+kind = "internship"
+where = "NL"
+page = "https://www.imc.com/eu/careers"
+pattern = "Usually opens in summer; rolling."
+[windows.opens]
+basis = "not_yet_verified"
+[windows.closes]
+basis = "not_yet_verified"
+
+[[windows]]
+id = "citadel-intern"
+cycle = "2027"
+company = "Citadel and Citadel Securities"
+programme = "Software Engineer / Quant Intern (London)"
+kind = "internship"
+where = "UK"
+page = "https://www.citadelsecurities.com/careers/"
+pattern = "Usually opens in summer; rolling."
+[windows.opens]
+basis = "not_yet_verified"
+[windows.closes]
+basis = "not_yet_verified"
+
+[[windows]]
+id = "hrt-intern"
+cycle = "2027"
+company = "Hudson River Trading"
+programme = "Software Engineer / Algo Intern (London)"
+kind = "internship"
+where = "UK"
+page = "https://www.hudsonrivertrading.com/careers/"
+pattern = "Usually opens in late summer; rolling."
+[windows.opens]
+basis = "not_yet_verified"
+[windows.closes]
+basis = "not_yet_verified"
+
+[[windows]]
+id = "jump-intern"
+cycle = "2027"
+company = "Jump Trading"
+programme = "Software Engineer / Quant Intern (London, Amsterdam)"
+kind = "internship"
+where = "UK, NL"
+page = "https://www.jumptrading.com/careers/"
+pattern = "Rolling."
+[windows.opens]
+basis = "not_yet_verified"
+[windows.closes]
+basis = "not_yet_verified"
+
+[[windows]]
+id = "g-research-intern"
+cycle = "2027"
+company = "G-Research"
+programme = "Software Engineer / Quant Research Intern (London)"
+kind = "internship"
+where = "UK"
+page = "https://www.gresearch.com/"
+pattern = "Usually opens in autumn."
+[windows.opens]
+basis = "not_yet_verified"
+[windows.closes]
+basis = "not_yet_verified"
+
+[[windows]]
+id = "xtx-intern"
+cycle = "2027"
+company = "XTX Markets"
+programme = "Software Engineer / Quant Intern (London)"
+kind = "internship"
+where = "UK"
+page = "https://www.xtxmarkets.com/careers/"
+pattern = "Rolling."
+[windows.opens]
+basis = "not_yet_verified"
+[windows.closes]
+basis = "not_yet_verified"
+
+[[windows]]
+id = "booking-graduate"
+cycle = "2027"
+company = "Booking.com"
+programme = "Software Engineer Graduate (Amsterdam)"
+kind = "graduate"
+where = "NL"
+page = "https://jobs.booking.com/"
+pattern = "Graduate intake is usually announced in autumn."
+[windows.opens]
+basis = "not_yet_verified"
+[windows.closes]
+basis = "not_yet_verified"
+
+[[windows]]
+id = "arm-graduate"
+cycle = "2027"
+company = "Arm"
+programme = "Graduate and Intern programmes (UK)"
+kind = "graduate"
+where = "UK"
+page = "https://careers.arm.com/"
+pattern = "UK graduate schemes usually open in autumn and close in winter."
+[windows.opens]
+basis = "not_yet_verified"
+[windows.closes]
+basis = "not_yet_verified"
+
+[[windows]]
+id = "asml-graduate"
+cycle = "2027"
+company = "ASML"
+programme = "Internships and Graduate roles (Veldhoven)"
+kind = "graduate"
+where = "NL"
+page = "https://www.asml.com/en/careers"
+pattern = "Rolling."
+[windows.opens]
+basis = "not_yet_verified"
+[windows.closes]
+basis = "not_yet_verified"
+
+[[windows]]
+id = "sap-ixp"
+cycle = "2027"
+company = "SAP"
+programme = "iXp Intern and Working Student (Germany)"
+kind = "internship"
+where = "DE"
+page = "https://jobs.sap.com/"
+pattern = "Rolling, often tied to German semester dates."
+[windows.opens]
+basis = "not_yet_verified"
+[windows.closes]
+basis = "not_yet_verified"

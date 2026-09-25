@@ -12,6 +12,14 @@
   status, next step, tasks and notes; CSV/JSON export.
 - Offline demo with PASS/FAIL checks; 93 offline tests.
 
+## Hiring windows (done)
+
+- 22 internship and graduate programmes at Google, Google DeepMind, Meta,
+  Amazon, Microsoft, Apple, Bloomberg, Palantir, Stripe, Booking.com, Arm,
+  ASML, SAP and eight trading firms, with dated claims and a basis per
+  claim; schema v2 with a migration; `deadlines`, `windows-report`,
+  `windows-track`, `windows-check` and `app-deadline`.
+
 ## Chunk 2: first live validation
 
 Acceptance: in a validation workspace (`job-radar init --validation`), a
@@ -19,7 +27,9 @@ Acceptance: in a validation workspace (`job-radar init --validation`), a
 corrected; docs/sources.md updated with dated results, including the real
 response shapes and robots.txt of the three API hosts; screening
 false-positive and false-negative rates noted on the real titles and
-locations, with rule fixes.
+locations, with rule fixes. For windows: read each programme's official page, quote
+the opening and closing wording for the 2027 cycle, and upgrade claims to
+`current_cycle_announcement`, starting with Google's reported 7 October.
 
 ## Chunk 3: more sources
 
