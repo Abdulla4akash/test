@@ -1,0 +1,31 @@
+# Python and tooling
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+dist/
+*.egg-info/
+
+# Local workspaces, databases, reports and exports hold private application
+# records. The default workspace lives outside the repository; these rules
+# catch workspaces created here by mistake.
+/workspace/
+/demo-workspace/
+*.sqlite3
+*.sqlite3-journal
+*.db
+/exports/
+/reports/
+
+# Secrets and private documents
+.env
+*.pem
+*.token
+
+# HTTP caches and live-validation workspaces hold third-party pages and real
+# adverts; they stay local.
+/cache/
+cache/http/
+/live-validation*/
+/validation-workspace/
