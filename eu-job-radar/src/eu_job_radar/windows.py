@@ -19,6 +19,7 @@ import re
 import tomllib
 from dataclasses import dataclass, field
 from datetime import date
+from html import unescape
 from importlib import resources
 from urllib.parse import urlsplit
 
@@ -49,6 +50,7 @@ class Claim:
     source: str | None = None
     note: str | None = None
     reported_on: str | None = None
+    checked_on: str | None = None
 
     @property
     def dated(self) -> bool:
@@ -64,8 +66,11 @@ class Claim:
         when = (
             self.date
             + (f" {self.time}" if self.time else "")
-            + (f" {self.timezone}" if self.timezone else " (time and timezone not stated)")
+            + (f" {self.timezone}" if self.timezone else "")
         )
+        missing = [name for name in ("time", "timezone") if not getattr(self, name)]
+        if missing:
+            when += " (" + " and ".join(missing) + " not stated)"
         return f"{when}, {BASES[self.basis]}"
 
 
@@ -95,18 +100,36 @@ def _claim(raw: dict | None, where: str) -> Claim:
         raise WindowError(f"{where}: unknown basis {claim.basis!r}")
     if claim.date is not None:
         _date(claim.date, where)
+        if claim.basis == "not_yet_verified":
+            raise WindowError(f"{where}: an unverified claim cannot have a date")
+    if claim.time is not None:
+        _time(claim.time)
     if claim.basis in DATED_BASES and claim.date is None:
         raise WindowError(f"{where}: basis {claim.basis} needs a date")
     if claim.basis == "current_cycle_announcement" and not claim.wording:
         raise WindowError(f"{where}: an announcement needs the quoted wording")
+    if claim.checked_on is not None:
+        _date(claim.checked_on, where + " checked_on")
+    if claim.basis == "current_cycle_announcement":
+        if not claim.source or not claim.checked_on:
+            raise WindowError(f"{where}: an announcement needs source and checked_on")
+        if urlsplit(claim.source).scheme != "https" or not urlsplit(claim.source).hostname:
+            raise WindowError(f"{where}: announcement source must be an https address")
     return claim
 
 
 def _date(value: str, where: str) -> str:
     try:
+        if not isinstance(value, str) or not re.fullmatch(r"\d{4}-\d{2}-\d{2}", value):
+            raise ValueError
         return date.fromisoformat(value).isoformat()
     except (TypeError, ValueError):
         raise WindowError(f"{where}: date must be YYYY-MM-DD, got {value!r}") from None
+
+
+def _time(value: str) -> None:
+    if not isinstance(value, str) or not re.fullmatch(r"(?:[01]\d|2[0-3]):[0-5]\d", value):
+        raise WindowError("--time must be HH:MM, from 00:00 to 23:59")
 
 
 def shipped(text: str | None = None) -> list[Window]:
@@ -141,7 +164,8 @@ def _validate(window: Window, where: str) -> None:
         raise WindowError(f"{where}: id must be lower-case letters, digits and hyphens")
     if window.kind not in KINDS:
         raise WindowError(f"{where}: kind must be one of {sorted(KINDS)}")
-    if urlsplit(window.page).scheme != "https":
+    parts = urlsplit(window.page)
+    if parts.scheme != "https" or not parts.hostname or parts.username or parts.password:
         raise WindowError(f"{where}: page must be an https address")
 
 
@@ -167,6 +191,8 @@ def all_windows(conn) -> list[Window]:
         )
         base = windows.get(row["id"])
         if base is not None:
+            if row["cycle"] != base.cycle:
+                continue  # reports from an older cycle cannot supply this cycle's dates
             # A report on a shipped window. An announcement is never overridden.
             if row["closes_date"] and not base.closes.fixed:
                 base.closes = claim
@@ -203,13 +229,22 @@ def report(session, window_id: str, *, closes=None, opens=None, time=None, timez
         raise WindowError("give --closes and/or --opens")
     closes = _date(closes, "--closes") if closes else None
     opens = _date(opens, "--opens") if opens else None
-    if time and not re.fullmatch(r"\d{2}:\d{2}", time):
-        raise WindowError("--time must be HH:MM")
-    if source and urlsplit(source).scheme not in {"http", "https"}:
+    if time:
+        _time(time)
+    if source and (
+        urlsplit(source).scheme not in {"http", "https"} or not urlsplit(source).hostname
+    ):
         raise WindowError("--source must be a web address")
     shipped_ids = {w.id for w in shipped()}
     conn = session.conn
+    previous = conn.execute("SELECT * FROM local_windows WHERE id = ?", (window_id,)).fetchone()
     if window_id not in shipped_ids:
+        if previous:
+            company = company or previous["company"]
+            programme = programme or previous["programme"]
+            page = page or previous["page"]
+            kind = previous["kind"]
+            cycle = cycle or previous["cycle"]
         if not (company and programme and page):
             raise WindowError(
                 f"'{window_id}' is not a shipped window; a new one needs --company, --programme"
@@ -223,8 +258,22 @@ def report(session, window_id: str, *, closes=None, opens=None, time=None, timez
             raise WindowError(
                 f"{window_id} already has an announced closing date ({base.closes.describe()})"
             )
+        if opens and base.opens.fixed:
+            raise WindowError(f"{window_id} already has an announced opening date")
         company, programme, page = base.company, base.programme, base.page
         kind, cycle = base.kind, base.cycle
+    if previous and previous["cycle"] == cycle:
+        # Reporting one endpoint must not erase the other endpoint or its evidence.
+        opens = opens if opens is not None else previous["opens_date"]
+        closes = closes if closes is not None else previous["closes_date"]
+        time = time if time is not None else previous["closes_time"]
+        timezone = timezone if timezone is not None else previous["timezone"]
+        source = source if source is not None else previous["source"]
+        note = note if note is not None else previous["note"]
+    if opens and closes and opens > closes:
+        raise WindowError("opening date must not be after closing date")
+    if (time or timezone) and not closes:
+        raise WindowError("--time and --timezone describe --closes; give a closing date")
     with db.transaction(conn):
         conn.execute(
             "INSERT OR REPLACE INTO local_windows (id, company, programme, kind, cycle, page,"
@@ -246,25 +295,30 @@ def deadlines(session, *, days: int = 60, include_unknown: bool = False) -> list
     an active application still carries)."""
     from .applications import ACTIVE
 
+    if days < 0:
+        raise WindowError("--days must be zero or greater")
     today = date.fromisoformat(session.today)
     out = []
     tracked = {
-        row[0]
+        (row[0], row[1], row[2])
         for row in session.conn.execute(
-            "SELECT window_id FROM applications WHERE window_id IS NOT NULL AND deadline IS NOT NULL"
+            "SELECT window_id, deadline, deadline_basis FROM applications"
+            " WHERE window_id IS NOT NULL AND deadline IS NOT NULL"
             f" AND status IN ({','.join('?' * len(ACTIVE))})",
             ACTIVE,
         )
     }
     for w in all_windows(session.conn):
         for label, claim in (("closes", w.closes), ("opens", w.opens)):
-            if not claim.dated or (label == "closes" and w.id in tracked):
+            if not claim.dated or (
+                label == "closes" and (w.id, claim.date, claim.basis) in tracked
+            ):
                 continue  # a tracked window shows once, as your application
             left = (date.fromisoformat(claim.date) - today).days
             if 0 <= left <= days or (label == "closes" and -3 <= left < 0):
                 out.append({"what": f"{w.company}: {w.programme}", "event": label,
                             "date": claim.date, "days_left": left, "basis": claim.basis,
-                            "detail": claim.describe(), "ref": w.id, "page": w.page})  # fmt: skip
+                            "detail": claim.describe(), "ref": w.id, "page": claim.source or w.page})  # fmt: skip
         if include_unknown and not w.closes.dated:
             out.append({"what": f"{w.company}: {w.programme}", "event": "closes", "date": None,
                         "days_left": None, "basis": "not_yet_verified", "detail": w.pattern or "",
@@ -297,7 +351,7 @@ class PageCheck:
 
 def _fold(text: str) -> str:
     text = re.sub(r"<[^>]+>", " ", text)
-    return re.sub(r"\s+", " ", text).casefold()
+    return re.sub(r"\s+", " ", unescape(text)).casefold()
 
 
 def check_pages(session, ids: list[str] | None = None, *, budget: int = 30) -> list[PageCheck]:
@@ -305,6 +359,10 @@ def check_pages(session, ids: list[str] | None = None, *, budget: int = 30) -> l
     wording is still there. Never edits the registry or your reports."""
     from . import collect, fetch
 
+    if budget < 1:
+        raise WindowError("the request budget must be at least 1")
+    if session.kind == "demo":
+        raise WindowError("demo workspaces cannot check live programme pages")
     chosen = [w for w in all_windows(session.conn) if not ids or w.id in ids]
     if ids:
         unknown = set(ids) - {w.id for w in chosen}
@@ -321,20 +379,26 @@ def check_pages(session, ids: list[str] | None = None, *, budget: int = 30) -> l
     )
     results, texts = [], {}
     for w in chosen:
-        quotes = [c.wording for c in (w.opens, w.closes) if c.wording]
-        fetcher = client.for_source(f"window:{w.id}", hosts=[w.host], cache_retention_days=2.0)
-        if w.page not in texts:
-            try:
-                texts[w.page] = _fold(fetcher.get(w.page, expect="html", purpose="page").text)
-            except fetch.FetchError as exc:
-                texts[w.page] = exc
-        page = texts[w.page]
-        if isinstance(page, Exception):
-            results.append(PageCheck(w, "failed", f"{page.kind}: {page}"))
-        elif not quotes:
+        claims = [c for c in (w.opens, w.closes) if c.wording]
+        targets = list(dict.fromkeys(c.source or w.page for c in claims)) or [w.page]
+        for target in targets:
+            fetcher = client.for_source(
+                f"window:{w.id}", hosts=[urlsplit(target).hostname], cache_retention_days=2.0
+            )
+            if target not in texts:
+                try:
+                    texts[target] = _fold(fetcher.get(target, expect="html", purpose="page").text)
+                except fetch.FetchError as exc:
+                    texts[target] = exc
+        failures = [texts[t] for t in targets if isinstance(texts[t], Exception)]
+        if failures:
+            results.append(PageCheck(w, "failed", "; ".join(f"{e.kind}: {e}" for e in failures)))
+        elif not claims:
             results.append(PageCheck(w, "reachable", "no quoted wording to compare yet"))
         else:
-            missing = [q for q in quotes if _fold(q) not in page]
+            missing = [
+                c.wording for c in claims if _fold(c.wording) not in texts[c.source or w.page]
+            ]
             results.append(
                 PageCheck(w, "absent" if missing else "present",
                           "missing: " + " | ".join(missing) if missing else "all quotes found")

@@ -12,11 +12,10 @@
 #
 # `pattern` describes what usually happens. It is never a date and never
 # becomes one. A past cycle's date is never copied into a new cycle.
-# `job-radar windows check` re-reads the pages and reports whether each
+# `job-radar windows-check` re-reads the pages and reports whether each
 # quoted wording is still there; it never edits this file.
 #
-# Written 2026-09-25 without internet access: no page below was read, so no
-# entry has a current_cycle_announcement yet.
+# Checked live 2026-09-25. See docs/sources.md for evidence and access limits.
 
 registry_version = 1
 
@@ -24,18 +23,24 @@ registry_version = 1
 id = "google-swe-intern"
 cycle = "2027"
 company = "Google"
-programme = "Software Engineering Intern (EMEA)"
+programme = "Software Engineering / SRE BS/MS Intern (EMEA)"
 kind = "internship"
-where = "UK, IE, CH, DE, PL, FR"
-page = "https://www.google.com/about/careers/applications/students/"
+where = "UK, CH, DE, PL, RO, FR, IE, SE"
+page = "https://www.google.com/about/careers/applications/jobs/results/100028133205254854-software-engineering-site-reliability-engineering-bsms-intern-2027"
 pattern = "Summer internships usually open in late summer or autumn of the year before and can close early once roles fill."
 [windows.opens]
 basis = "not_yet_verified"
+source = "https://www.google.com/about/careers/applications/jobs/results/100028133205254854-software-engineering-site-reliability-engineering-bsms-intern-2027"
+checked_on = "2026-09-25"
+note = "Official 2027 BS/MS and PhD SWE/SRE postings say before 23 October, not the owner-reported 7 October. Time and timezone are not stated; apply early. See docs/sources.md for the other locations and exact wording."
+
 [windows.closes]
-basis = "owner_reported"
-date = "2026-10-07"
-reported_on = "2026-09-25"
-note = "The owner said: 'google has a internship deadline at 7 october'. Which Google internship, the time and the timezone were not stated. Read the official page and upgrade this claim."
+basis = "current_cycle_announcement"
+date = "2026-10-23"
+wording = "Please complete your application before 23rd October 2026."
+source = "https://www.google.com/about/careers/applications/jobs/results/100028133205254854-software-engineering-site-reliability-engineering-bsms-intern-2027"
+checked_on = "2026-09-25"
+note = "Official 2027 BS/MS and PhD SWE/SRE postings say before 23 October, not the owner-reported 7 October. Time and timezone are not stated; apply early. See docs/sources.md for the other locations and exact wording."
 
 [[windows]]
 id = "google-step-intern"
@@ -44,12 +49,19 @@ company = "Google"
 programme = "STEP Intern (first- and second-year students)"
 kind = "internship"
 where = "EMEA"
-page = "https://www.google.com/about/careers/applications/students/"
+page = "https://www.google.com/about/careers/applications/students/engineering-and-technical-internships/"
 pattern = "STEP usually opens in autumn and runs for a short window."
 [windows.opens]
 basis = "not_yet_verified"
+source = "https://www.google.com/about/careers/applications/students/engineering-and-technical-internships/"
+checked_on = "2026-09-25"
+note = "The students page and STEP 2027 search did not identify a current STEP deadline."
+
 [windows.closes]
 basis = "not_yet_verified"
+source = "https://www.google.com/about/careers/applications/students/engineering-and-technical-internships/"
+checked_on = "2026-09-25"
+note = "The students page and STEP 2027 search did not identify a current STEP deadline."
 
 [[windows]]
 id = "google-deepmind-student-researcher"
@@ -58,12 +70,19 @@ company = "Google DeepMind"
 programme = "Student Researcher / Research Engineering Intern"
 kind = "internship"
 where = "UK, CH, FR"
-page = "https://deepmind.google/about/careers/"
+page = "https://deepmind.google/student-researcher-program/"
 pattern = "Student roles are posted through the year; some open in autumn for the next summer."
 [windows.opens]
 basis = "not_yet_verified"
+source = "https://deepmind.google/student-researcher-program/"
+checked_on = "2026-09-25"
+note = "Page still names the 2025-2026 cycle; no 2027 Student Researcher date verified. Google Research Scientist internships are separate postings."
+
 [windows.closes]
 basis = "not_yet_verified"
+source = "https://deepmind.google/student-researcher-program/"
+checked_on = "2026-09-25"
+note = "Page still names the 2025-2026 cycle; no 2027 Student Researcher date verified. Google Research Scientist internships are separate postings."
 
 [[windows]]
 id = "meta-swe-intern"
@@ -76,8 +95,15 @@ page = "https://www.metacareers.com/"
 pattern = "Intern and grad roles usually open in autumn and are rolling."
 [windows.opens]
 basis = "not_yet_verified"
+source = "https://www.metacareers.com/"
+checked_on = "2026-09-25"
+note = "Homepage and job search returned HTML but no readable 2027 programme deadline."
+
 [windows.closes]
 basis = "not_yet_verified"
+source = "https://www.metacareers.com/"
+checked_on = "2026-09-25"
+note = "Homepage and job search returned HTML but no readable 2027 programme deadline."
 
 [[windows]]
 id = "amazon-sde-intern"
@@ -86,12 +112,19 @@ company = "Amazon"
 programme = "SDE Intern / SDE Graduate (EU and UK)"
 kind = "internship"
 where = "UK, IE, DE, LU, ES"
-page = "https://www.amazon.jobs/"
+page = "https://www.amazon.jobs/content/en/career-programs/university"
 pattern = "Student programmes usually open in late summer and autumn; many are rolling."
 [windows.opens]
 basis = "not_yet_verified"
+source = "https://www.amazon.jobs/content/en/career-programs/university"
+checked_on = "2026-09-25"
+note = "Student programme page states no 2027 opening or closing date."
+
 [windows.closes]
 basis = "not_yet_verified"
+source = "https://www.amazon.jobs/content/en/career-programs/university"
+checked_on = "2026-09-25"
+note = "Student programme page states no 2027 opening or closing date."
 
 [[windows]]
 id = "microsoft-intern"
@@ -104,8 +137,15 @@ page = "https://careers.microsoft.com/"
 pattern = "Intern roles usually open in autumn; Microsoft Research internships follow their own calendar."
 [windows.opens]
 basis = "not_yet_verified"
+source = "https://careers.microsoft.com/"
+checked_on = "2026-09-25"
+note = "Robots URL redirects to an HTML error page; access conservatively refused."
+
 [windows.closes]
 basis = "not_yet_verified"
+source = "https://careers.microsoft.com/"
+checked_on = "2026-09-25"
+note = "Robots URL redirects to an HTML error page; access conservatively refused."
 
 [[windows]]
 id = "apple-intern"
@@ -118,8 +158,15 @@ page = "https://jobs.apple.com/"
 pattern = "Student roles are posted through the year."
 [windows.opens]
 basis = "not_yet_verified"
+source = "https://jobs.apple.com/"
+checked_on = "2026-09-25"
+note = "Robots URL redirects off-host to a not-found page; access conservatively refused."
+
 [windows.closes]
 basis = "not_yet_verified"
+source = "https://jobs.apple.com/"
+checked_on = "2026-09-25"
+note = "Robots URL redirects off-host to a not-found page; access conservatively refused."
 
 [[windows]]
 id = "bloomberg-swe-intern"
@@ -128,12 +175,19 @@ company = "Bloomberg"
 programme = "Software Engineer Intern / New Grad (London)"
 kind = "internship"
 where = "UK"
-page = "https://www.bloomberg.com/company/careers/"
+page = "https://bloomberg.avature.net/en_US/careers/SearchJobs"
 pattern = "Usually opens late summer, rolling review."
 [windows.opens]
 basis = "not_yet_verified"
+source = "https://bloomberg.avature.net/en_US/careers/SearchJobs"
+checked_on = "2026-09-25"
+note = "Old careers URL redirects to a general company page, which links to this Avature board. Avature robots disallows access; destination content not read."
+
 [windows.closes]
 basis = "not_yet_verified"
+source = "https://bloomberg.avature.net/en_US/careers/SearchJobs"
+checked_on = "2026-09-25"
+note = "Old careers URL redirects to a general company page, which links to this Avature board. Avature robots disallows access; destination content not read."
 
 [[windows]]
 id = "palantir-intern"
@@ -146,8 +200,15 @@ page = "https://www.palantir.com/careers/"
 pattern = "Rolling."
 [windows.opens]
 basis = "not_yet_verified"
+source = "https://www.palantir.com/careers/"
+checked_on = "2026-09-25"
+note = "Careers page links to Lever; no 2027 programme dates stated in the readable page."
+
 [windows.closes]
 basis = "not_yet_verified"
+source = "https://www.palantir.com/careers/"
+checked_on = "2026-09-25"
+note = "Careers page links to Lever; no 2027 programme dates stated in the readable page."
 
 [[windows]]
 id = "stripe-intern"
@@ -156,12 +217,19 @@ company = "Stripe"
 programme = "Software Engineering Intern / New Grad (Dublin, London)"
 kind = "internship"
 where = "IE, UK"
-page = "https://stripe.com/jobs"
+page = "https://stripe.com/gb/careers/emerging-talent"
 pattern = "Usually opens in autumn, rolling."
 [windows.opens]
 basis = "not_yet_verified"
+source = "https://stripe.com/gb/careers/emerging-talent"
+checked_on = "2026-09-25"
+note = "Internship interviews align with local academic calendars; no exact 2027 application dates stated."
+
 [windows.closes]
 basis = "not_yet_verified"
+source = "https://stripe.com/gb/careers/emerging-talent"
+checked_on = "2026-09-25"
+note = "Internship interviews align with local academic calendars; no exact 2027 application dates stated."
 
 [[windows]]
 id = "jane-street-intern"
@@ -170,12 +238,19 @@ company = "Jane Street"
 programme = "Software Engineer / Quant Intern (London, Amsterdam)"
 kind = "internship"
 where = "UK, NL"
-page = "https://www.janestreet.com/join-jane-street/"
+page = "https://www.janestreet.com/join-jane-street/internships/"
 pattern = "Usually opens in summer for the next summer; rolling, early applications advised."
 [windows.opens]
 basis = "not_yet_verified"
+source = "https://www.janestreet.com/join-jane-street/internships/"
+checked_on = "2026-09-25"
+note = "Internship and student open-roles pages state no exact 2027 application dates."
+
 [windows.closes]
 basis = "not_yet_verified"
+source = "https://www.janestreet.com/join-jane-street/internships/"
+checked_on = "2026-09-25"
+note = "Internship and student open-roles pages state no exact 2027 application dates."
 
 [[windows]]
 id = "optiver-intern"
@@ -184,12 +259,19 @@ company = "Optiver"
 programme = "Software Engineer / Trader Intern and Graduate (Amsterdam, London)"
 kind = "internship"
 where = "NL, UK"
-page = "https://optiver.com/working-at-optiver/career-opportunities/"
+page = "https://www.optiver.com/join-us/jobs/"
 pattern = "Usually opens in summer; rolling."
 [windows.opens]
 basis = "not_yet_verified"
+source = "https://www.optiver.com/join-us/jobs/"
+checked_on = "2026-09-25"
+note = "Old URL redirects to this jobs page. No exact EU/UK 2027 programme date found."
+
 [windows.closes]
 basis = "not_yet_verified"
+source = "https://www.optiver.com/join-us/jobs/"
+checked_on = "2026-09-25"
+note = "Old URL redirects to this jobs page. No exact EU/UK 2027 programme date found."
 
 [[windows]]
 id = "imc-intern"
@@ -198,12 +280,19 @@ company = "IMC Trading"
 programme = "Software Engineer / Quant Intern and Graduate (Amsterdam)"
 kind = "internship"
 where = "NL"
-page = "https://www.imc.com/eu/careers"
+page = "https://www.imc.com/eu/careers/students-graduates/internships"
 pattern = "Usually opens in summer; rolling."
 [windows.opens]
 basis = "not_yet_verified"
+source = "https://www.imc.com/eu/careers/students-graduates/internships"
+checked_on = "2026-09-25"
+note = "Internship page describes ten-week programmes; no exact 2027 application dates."
+
 [windows.closes]
 basis = "not_yet_verified"
+source = "https://www.imc.com/eu/careers/students-graduates/internships"
+checked_on = "2026-09-25"
+note = "Internship page describes ten-week programmes; no exact 2027 application dates."
 
 [[windows]]
 id = "citadel-intern"
@@ -216,8 +305,15 @@ page = "https://www.citadelsecurities.com/careers/"
 pattern = "Usually opens in summer; rolling."
 [windows.opens]
 basis = "not_yet_verified"
+source = "https://www.citadelsecurities.com/careers/"
+checked_on = "2026-09-25"
+note = "Citadel Securities careers and Citadel student pages returned HTTP 403; not bypassed."
+
 [windows.closes]
 basis = "not_yet_verified"
+source = "https://www.citadelsecurities.com/careers/"
+checked_on = "2026-09-25"
+note = "Citadel Securities careers and Citadel student pages returned HTTP 403; not bypassed."
 
 [[windows]]
 id = "hrt-intern"
@@ -230,8 +326,15 @@ page = "https://www.hudsonrivertrading.com/careers/"
 pattern = "Usually opens in late summer; rolling."
 [windows.opens]
 basis = "not_yet_verified"
+source = "https://www.hudsonrivertrading.com/careers/"
+checked_on = "2026-09-25"
+note = "Careers page returned HTTP 403; not bypassed."
+
 [windows.closes]
 basis = "not_yet_verified"
+source = "https://www.hudsonrivertrading.com/careers/"
+checked_on = "2026-09-25"
+note = "Careers page returned HTTP 403; not bypassed."
 
 [[windows]]
 id = "jump-intern"
@@ -240,12 +343,19 @@ company = "Jump Trading"
 programme = "Software Engineer / Quant Intern (London, Amsterdam)"
 kind = "internship"
 where = "UK, NL"
-page = "https://www.jumptrading.com/careers/"
+page = "https://www.jumptrading.com/hr/students-new-grads"
 pattern = "Rolling."
 [windows.opens]
 basis = "not_yet_verified"
+source = "https://www.jumptrading.com/hr/students-new-grads"
+checked_on = "2026-09-25"
+note = "2027 roles are opening by region, starting with the US. No EU/UK opening or closing date stated."
+
 [windows.closes]
 basis = "not_yet_verified"
+source = "https://www.jumptrading.com/hr/students-new-grads"
+checked_on = "2026-09-25"
+note = "2027 roles are opening by region, starting with the US. No EU/UK opening or closing date stated."
 
 [[windows]]
 id = "g-research-intern"
@@ -254,12 +364,19 @@ company = "G-Research"
 programme = "Software Engineer / Quant Research Intern (London)"
 kind = "internship"
 where = "UK"
-page = "https://www.gresearch.com/"
+page = "https://www.gresearch.com/students-graduates/engineering-internships/"
 pattern = "Usually opens in autumn."
 [windows.opens]
 basis = "not_yet_verified"
+source = "https://www.gresearch.com/students-graduates/engineering-internships/"
+checked_on = "2026-09-25"
+note = "Engineering: 2027 internships will open soon. Quant research: applications are now open, with no opening date or closing deadline stated. Programme attendance dates are not application deadlines."
+
 [windows.closes]
 basis = "not_yet_verified"
+source = "https://www.gresearch.com/students-graduates/engineering-internships/"
+checked_on = "2026-09-25"
+note = "Engineering: 2027 internships will open soon. Quant research: applications are now open, with no opening date or closing deadline stated. Programme attendance dates are not application deadlines."
 
 [[windows]]
 id = "xtx-intern"
@@ -272,8 +389,15 @@ page = "https://www.xtxmarkets.com/careers/"
 pattern = "Rolling."
 [windows.opens]
 basis = "not_yet_verified"
+source = "https://www.xtxmarkets.com/careers/"
+checked_on = "2026-09-25"
+note = "Careers page links to Greenhouse; no 2027 internship application date stated."
+
 [windows.closes]
 basis = "not_yet_verified"
+source = "https://www.xtxmarkets.com/careers/"
+checked_on = "2026-09-25"
+note = "Careers page links to Greenhouse; no 2027 internship application date stated."
 
 [[windows]]
 id = "booking-graduate"
@@ -282,12 +406,21 @@ company = "Booking.com"
 programme = "Software Engineer Graduate (Amsterdam)"
 kind = "graduate"
 where = "NL"
-page = "https://jobs.booking.com/"
+page = "https://careers.booking.com/early-careers/"
 pattern = "Graduate intake is usually announced in autumn."
 [windows.opens]
-basis = "not_yet_verified"
+basis = "current_cycle_announcement"
+date = "2027-01-04"
+wording = "Applications will open on January 4th, 2027."
+source = "https://careers.booking.com/early-careers/"
+checked_on = "2026-09-25"
+note = "Amsterdam Software Engineering Grads start September 2027. Closing date, opening time and timezone not stated. The October 12 opening belongs to internships and Shanghai graduates, not Amsterdam graduates."
+
 [windows.closes]
 basis = "not_yet_verified"
+source = "https://careers.booking.com/early-careers/"
+checked_on = "2026-09-25"
+note = "Amsterdam Software Engineering Grads start September 2027. Closing date, opening time and timezone not stated. The October 12 opening belongs to internships and Shanghai graduates, not Amsterdam graduates."
 
 [[windows]]
 id = "arm-graduate"
@@ -296,12 +429,19 @@ company = "Arm"
 programme = "Graduate and Intern programmes (UK)"
 kind = "graduate"
 where = "UK"
-page = "https://careers.arm.com/"
+page = "https://careers.arm.com/graduates"
 pattern = "UK graduate schemes usually open in autumn and close in winter."
 [windows.opens]
 basis = "not_yet_verified"
+source = "https://careers.arm.com/graduates"
+checked_on = "2026-09-25"
+note = "Graduate and internship pages state no exact 2027 application dates."
+
 [windows.closes]
 basis = "not_yet_verified"
+source = "https://careers.arm.com/graduates"
+checked_on = "2026-09-25"
+note = "Graduate and internship pages state no exact 2027 application dates."
 
 [[windows]]
 id = "asml-graduate"
@@ -310,12 +450,19 @@ company = "ASML"
 programme = "Internships and Graduate roles (Veldhoven)"
 kind = "graduate"
 where = "NL"
-page = "https://www.asml.com/en/careers"
+page = "https://www.asml.com/en/careers/students-new-graduates/netherlands"
 pattern = "Rolling."
 [windows.opens]
 basis = "not_yet_verified"
+source = "https://www.asml.com/en/careers/students-new-graduates/netherlands"
+checked_on = "2026-09-25"
+note = "Netherlands student page states no exact 2027 application dates."
+
 [windows.closes]
 basis = "not_yet_verified"
+source = "https://www.asml.com/en/careers/students-new-graduates/netherlands"
+checked_on = "2026-09-25"
+note = "Netherlands student page states no exact 2027 application dates."
 
 [[windows]]
 id = "sap-ixp"
@@ -328,5 +475,12 @@ page = "https://jobs.sap.com/"
 pattern = "Rolling, often tied to German semester dates."
 [windows.opens]
 basis = "not_yet_verified"
+source = "https://jobs.sap.com/"
+checked_on = "2026-09-25"
+note = "Jobs page returned HTTP 403; not bypassed."
+
 [windows.closes]
 basis = "not_yet_verified"
+source = "https://jobs.sap.com/"
+checked_on = "2026-09-25"
+note = "Jobs page returned HTTP 403; not bypassed."
