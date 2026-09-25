@@ -18,8 +18,10 @@ API.
 
 ## Deadline first
 
-**Mismatch:** Google's reported 7 October date was not confirmed. The checked
-2027 SWE/SRE postings say **before 23 October 2026**, without a time or timezone.
+**Google internship deadline:** The checked 2027 **EMEA SWE/SRE internships**
+say **before 23 October 2026**, without a time or timezone. The internship
+associated with the reported **7 October** date remains unidentified; the
+23 October date does not apply to every Google internship.
 
 | Programme | Confirmed event | Evidence checked 2026-09-25 |
 |---|---|---|

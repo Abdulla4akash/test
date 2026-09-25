@@ -4,8 +4,9 @@ Checked **2026-09-25**, in a validation workspace outside this repository.
 
 ## Deadline mismatch: Google
 
-The owner's **7 October 2026** date was not confirmed. Google's **2027**
-Software Engineering / SRE BS/MS internship postings instead say:
+The owner's **7 October 2026** date came from an informal LinkedIn report;
+no exact internship title or official link was available to identify it. The checked **2027 EMEA**
+Software Engineering / SRE BS/MS **internship** postings say:
 
 > Please complete your application before 23rd October 2026.
 
@@ -37,6 +38,31 @@ Researcher programme is a separate window and remains unverified for 2027.
 | [Data Science PhD Intern, 2027](https://www.google.com/about/careers/applications/jobs/results/73321728058499782-data-science-phd-intern-2027) | “Please complete your application before 23rd October 2026.” | 2026-09-25 |
 | [Research Scientist PhD Intern, 2027](https://www.google.com/about/careers/applications/jobs/results/134795423167455942-research-scientist-phd-intern-2027) | “Please complete your application before 23rd October 2026.” | 2026-09-25 |
 | [Research Scientist PhD Intern, 2027](https://www.google.com/about/careers/applications/jobs/results/111285665542349510-research-scientist-phd-intern-2027) | “Please complete your application before 23rd October 2026.” | 2026-09-25 |
+
+### Follow-up on the reported 7 October internship deadline
+
+Rechecked on **2026-09-25** after the owner clarified that 7 October refers
+to an internship. The 23 October evidence above also refers to internships,
+not graduate jobs. An additional **20 official posting pages** and **eight
+search pages** were read. None of these identified a 7 October deadline.
+This is not an exhaustive check of every Google internship. The owner
+subsequently clarified that 7 October came from someone on LinkedIn and
+could not supply the listing. That report remains unverified; LinkedIn
+was not scraped.
+
+The additional pages show why the date must be tied to a specific posting:
+US/Canada BS/MS SWE internships give an anticipated window until
+25 September 2026, several engineering internships say before 9 October
+2026, and the checked Associate Product Manager internship says by
+6 October 2026. Rolling windows may close early. None of these dates was
+assigned to the EMEA SWE/SRE registry entry. Fall 2026 researcher results
+were checked only to distinguish cycles, not used as 2027 evidence.
+
+This follow-up made **28 additional live requests**. Google's cached robots
+policy refused two paginated search URLs before any request was sent to
+them. Those pages were not read. All follow-up URLs and outcomes are in the
+ledger below. The report and registry notes now explicitly limit the
+23 October claim to the checked EMEA postings.
 
 ## Other current-cycle evidence
 
@@ -75,7 +101,7 @@ not mean that the content was read. Unknown openings/closings remain
 
 | Window | Official page checked / replacement | Result on 2026-09-25 |
 |---|---|---|
-| `google-swe-intern` | [Google](https://www.google.com/about/careers/applications/jobs/results/100028133205254854-software-engineering-site-reliability-engineering-bsms-intern-2027) | Official 2027 BS/MS and PhD SWE/SRE postings say before 23 October, not the owner-reported 7 October. Time and timezone are not stated; apply early. See docs/sources.md for the other locations and exact wording. |
+| `google-swe-intern` | [Google](https://www.google.com/about/careers/applications/jobs/results/100028133205254854-software-engineering-site-reliability-engineering-bsms-intern-2027) | The checked 2027 EMEA BS/MS and PhD SWE/SRE internships say before 23 October. This date applies to those postings only. The internship associated with the owner-reported 7 October remains unidentified. Time and timezone are not stated; apply early. See docs/sources.md. |
 | `google-step-intern` | [Google](https://www.google.com/about/careers/applications/students/engineering-and-technical-internships/) | The students page and STEP 2027 search did not identify a current STEP deadline. |
 | `google-deepmind-student-researcher` | [Google DeepMind](https://deepmind.google/student-researcher-program/) | Page still names the 2025-2026 cycle; no 2027 Student Researcher date verified. Google Research Scientist internships are separate postings. |
 | `meta-swe-intern` | [Meta](https://www.metacareers.com/) | Homepage and job search returned HTML but no readable 2027 programme deadline. |
@@ -289,16 +315,16 @@ cache, but are discarded from normalized postings and never committed.
 
 ## Request accounting and dated ledger
 
-**142 live job/source HTTP requests**: **37** initial collection + **5**
-targeted correction checks + **100** official-page, API-documentation and
-robots requests. All used `fetch.py`, its built-in user-agent, registered
+**170 live job/source HTTP requests**: **37** initial collection + **5**
+targeted correction checks + **100** initial official-page, API-documentation
+and robots requests + **28** Google follow-up requests. All used `fetch.py`, its built-in user-agent, registered
 hosts, robots checks and at least one-second per-site/ATS spacing. Redirect
 hops, error responses and robots reads count. Cache-only checks and refused
 paths with no outgoing request do not. Git transport and dependency
 installation are outside this job/source HTTP total.
 
 Research used a separate 300-request per-process ceiling with retries
-disabled; the total across those research processes was 100. Collection
+disabled; the total across those research processes was 128. Collection
 budgets were 80 and 12, as described above. This ledger combines identical
 URL/purpose/status outcomes; **N counts actual outgoing attempts**, not
 logical page checks. Every entry below was checked on **2026-09-25**.
@@ -446,3 +472,38 @@ logical page checks. Every entry below was checked on **2026-09-25**.
 | 2026-09-25 | [source](https://api.ashbyhq.com/posting-api/job-board/plaid) | board | 200 / ok | 1 |  |
 | 2026-09-25 | [source](https://api.ashbyhq.com/posting-api/job-board/openai) | board | 200 / ok | 1 |  |
 | 2026-09-25 | [source](https://api.lever.co/v0/postings/palantir?mode=json) | board | 200 / ok | 1 |  |
+
+### Google follow-up ledger — 2026-09-25
+
+| Date | URL | HTTP / result | Requests | Finding |
+|---|---|---|---:|---|
+| 2026-09-25 | [source](https://www.google.com/about/careers/applications/jobs/results/?q=intern%202027&page=2) | — / blocked_by_robots | 0 | Refused by cached robots policy; content not read. |
+| 2026-09-25 | [source](https://www.google.com/about/careers/applications/jobs/results/?q=intern%202027&page=3) | — / blocked_by_robots | 0 | Refused by cached robots policy; content not read. |
+| 2026-09-25 | [source](https://www.google.com/about/careers/applications/jobs/results/?q=intern%20%22October%207%22) | 200 / ok | 1 | No matching jobs returned. |
+| 2026-09-25 | [source](https://www.google.com/about/careers/applications/jobs/results/?q=Software+Engineering+Intern+BS+Summer+2027) | 200 / ok | 1 | Readable search results; no 7 October deadline identified. |
+| 2026-09-25 | [source](https://www.google.com/about/careers/applications/jobs/results/?q=intern+7th+October) | 200 / ok | 1 | No matching jobs returned. |
+| 2026-09-25 | [source](https://www.google.com/about/careers/applications/jobs/results/100648618540573382-software-engineering-intern-bs-summer-2027) | 200 / ok | 1 | Anticipated application window until 25 September 2026; may close early. |
+| 2026-09-25 | [source](https://www.google.com/about/careers/applications/jobs/results/123510626377966278-software-developer-intern-bs-summer-2027) | 200 / ok | 1 | Anticipated application window until 25 September 2026; may close early. |
+| 2026-09-25 | [source](https://www.google.com/about/careers/applications/jobs/results/136826798817059526-security-engineering-intern-bsms-summer-2027) | 200 / ok | 1 | Apply before 9 October 2026. |
+| 2026-09-25 | [source](https://www.google.com/about/careers/applications/jobs/results/122803627516404422-hardware-engineering-intern-bsms-summer-2027) | 200 / ok | 1 | Apply before 9 October 2026. |
+| 2026-09-25 | [source](https://www.google.com/about/careers/applications/jobs/results/88570332985598662-silicon-engineering-intern-bsms-summer-2027) | 200 / ok | 1 | Apply before 9 October 2026. |
+| 2026-09-25 | [source](https://www.google.com/about/careers/applications/jobs/results/114405557703451334-customer-and-partner-solutions-engineering-intern-bsms-summer-2027) | 200 / ok | 1 | Apply before 9 October 2026. |
+| 2026-09-25 | [source](https://www.google.com/about/careers/applications/jobs/results/131518356678156998-student-researcher-bsms-wintersummer-2027) | 200 / ok | 1 | Anticipated application window until 16 July 2027; may close early. |
+| 2026-09-25 | [source](https://www.google.com/about/careers/applications/jobs/results/?q=intern+2027&location=India) | 200 / ok | 1 | Readable search results; no 7 October deadline identified. |
+| 2026-09-25 | [source](https://www.google.com/about/careers/applications/jobs/results/?q=Software+Engineering+Intern+Winter+2027) | 200 / ok | 1 | Readable search results; no 7 October deadline identified. |
+| 2026-09-25 | [source](https://www.google.com/about/careers/applications/jobs/results/109976286780105414-software-engineering-phd-intern-summer-2027) | 200 / ok | 1 | No exact application deadline found in the readable page. |
+| 2026-09-25 | [source](https://www.google.com/about/careers/applications/jobs/results/109375266236572358-silicon-engineering-intern-phd-summer-2027) | 200 / ok | 1 | Apply before 30 April 2027. |
+| 2026-09-25 | [source](https://www.google.com/about/careers/applications/jobs/results/?q=Associate+Software+Developer+Intern) | 200 / ok | 1 | Readable search results; no 7 October deadline identified. |
+| 2026-09-25 | [source](https://www.google.com/about/careers/applications/jobs/results/?q=intern+2026) | 200 / ok | 1 | Readable search results; no 7 October deadline identified. |
+| 2026-09-25 | [source](https://www.google.com/about/careers/applications/jobs/results/?q=Business+Intern+2027) | 200 / ok | 1 | Readable search results; no 7 October deadline identified. |
+| 2026-09-25 | [source](https://www.google.com/about/careers/applications/jobs/results/94172495052972742-software-engineering-intern-ms-summer-2027) | 200 / ok | 1 | Anticipated application window until 25 September 2026; may close early. |
+| 2026-09-25 | [source](https://www.google.com/about/careers/applications/jobs/results/91436104816698054-software-engineering-intern-phd-summer-2027) | 200 / ok | 1 | Anticipated application window until 26 February 2027; may close early. |
+| 2026-09-25 | [source](https://www.google.com/about/careers/applications/jobs/results/104551723757904582-software-engineering-intern-phd-summer-2027) | 200 / ok | 1 | Anticipated application window until 30 April 2027; may close early. |
+| 2026-09-25 | [source](https://www.google.com/about/careers/applications/jobs/results/112518690523488966-software-developer-intern-phd-summer-2027) | 200 / ok | 1 | Anticipated application window until 26 February 2027; may close early. |
+| 2026-09-25 | [source](https://www.google.com/about/careers/applications/jobs/results/138960139137753798-software-developer-intern-ms-summer-2027) | 200 / ok | 1 | Anticipated application window until 25 September 2026; may close early. |
+| 2026-09-25 | [source](https://www.google.com/about/careers/applications/jobs/results/83535564552184518-student-researcher-phd-fall-2026) | 200 / ok | 1 | Fall 2026 cycle: anticipated window until 27 November 2026; may close early. |
+| 2026-09-25 | [source](https://www.google.com/about/careers/applications/jobs/results/132362676918461126-student-researcher-bsms-fall-2026) | 200 / ok | 1 | Fall 2026 cycle: anticipated window until 27 November 2026; may close early. |
+| 2026-09-25 | [source](https://www.google.com/about/careers/applications/jobs/results/128430823337534150-student-researcher-phd-fall-2026) | 200 / ok | 1 | Fall 2026 cycle: anticipated window until 27 November 2026; may close early. |
+| 2026-09-25 | [source](https://www.google.com/about/careers/applications/jobs/results/113855697199735494-student-researcher-bsms-fall-2026) | 200 / ok | 1 | Fall 2026 cycle: anticipated window until 27 November 2026; may close early. |
+| 2026-09-25 | [source](https://www.google.com/about/careers/applications/jobs/results/100460871561421510-business-undergraduate-intern-summer-2027) | 200 / ok | 1 | Apply by October 9th; deadline sentence omits year. Internship starts May/June 2027. |
+| 2026-09-25 | [source](https://www.google.com/about/careers/applications/jobs/results/134770032394543814-associate-product-manager-intern-summer-2027) | 200 / ok | 1 | Opens 22 September 2026; apply by 6 October 2026. |

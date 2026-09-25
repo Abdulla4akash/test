@@ -32,7 +32,7 @@ pattern = "Summer internships usually open in late summer or autumn of the year 
 basis = "not_yet_verified"
 source = "https://www.google.com/about/careers/applications/jobs/results/100028133205254854-software-engineering-site-reliability-engineering-bsms-intern-2027"
 checked_on = "2026-09-25"
-note = "Official 2027 BS/MS and PhD SWE/SRE postings say before 23 October, not the owner-reported 7 October. Time and timezone are not stated; apply early. See docs/sources.md for the other locations and exact wording."
+note = "The checked 2027 EMEA BS/MS and PhD SWE/SRE internships say before 23 October. This date applies to those postings only. The internship associated with the owner-reported 7 October remains unidentified. Time and timezone are not stated; apply early. See docs/sources.md."
 
 [windows.closes]
 basis = "current_cycle_announcement"
@@ -40,7 +40,7 @@ date = "2026-10-23"
 wording = "Please complete your application before 23rd October 2026."
 source = "https://www.google.com/about/careers/applications/jobs/results/100028133205254854-software-engineering-site-reliability-engineering-bsms-intern-2027"
 checked_on = "2026-09-25"
-note = "Official 2027 BS/MS and PhD SWE/SRE postings say before 23 October, not the owner-reported 7 October. Time and timezone are not stated; apply early. See docs/sources.md for the other locations and exact wording."
+note = "The checked 2027 EMEA BS/MS and PhD SWE/SRE internships say before 23 October. This date applies to those postings only. The internship associated with the owner-reported 7 October remains unidentified. Time and timezone are not stated; apply early. See docs/sources.md."
 
 [[windows]]
 id = "google-step-intern"
