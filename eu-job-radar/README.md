@@ -7,7 +7,7 @@ rules: it reads public sources only when you ask, keeps a dated history of
 every change it sees, keeps what it collects apart from what you decide, and
 never sends email or submits applications.
 
-Status: **Chunk 1 and hiring windows.** Live collection from company job boards through the
+Status: **Live boards validated; deadline verification partial (2026-09-25).** Live collection from company job boards through the
 public APIs of three applicant tracking systems (Greenhouse, Lever and
 Ashby), a rules-only screen against your preferences, a discovery inbox, an
 application queue with tasks, next steps and deadlines, a registry of
@@ -18,10 +18,18 @@ API.
 
 ## Deadline first
 
-| Programme | Closes | Basis |
+**Mismatch:** Google's reported 7 October date was not confirmed. The checked
+2027 SWE/SRE postings say **before 23 October 2026**, without a time or timezone.
+
+| Programme | Confirmed event | Evidence checked 2026-09-25 |
 |---|---|---|
-| Google, Software Engineering Intern (EMEA) | **7 Oct 2026** | reported by the owner on 2026-09-25; **not checked** on Google's page (which internship, time and timezone unknown) |
-| 21 other big-tech, quant and graduate programmes | unknown | no official page read yet |
+| Google, SWE/SRE BS/MS Intern (EMEA), 2027 | **Apply before 23 Oct 2026** | “Please complete your application before 23rd October 2026.” [Official London posting](https://www.google.com/about/careers/applications/jobs/results/100028133205254854-software-engineering-site-reliability-engineering-bsms-intern-2027); [other checked postings](docs/sources.md#deadline-mismatch-google). Time/timezone unstated. |
+| Booking.com, Software Engineer Graduate (Amsterdam), 2027 | **Opens 4 Jan 2027**; closing unknown | “Applications will open on January 4th, 2027.” [Official page](https://careers.booking.com/early-careers/). Time/timezone unstated. |
+| Other 20 registry programmes | unknown | No exact 2027 dates verified. [Page results and access limits](docs/sources.md#all-22-registry-programmes). |
+
+The same Booking.com page gives **12 Oct 2026** as the opening for its July
+2027 Amsterdam **software engineering internships**. That separate programme
+is not the registry's graduate window. No closing date was found for it.
 
 `job-radar deadlines` lists every dated deadline, soonest first, with its
 basis. Check the official page before relying on a reported date.
@@ -30,8 +38,7 @@ basis. Check the official page before relying on a reported date.
 
 Google, Meta, Amazon, Microsoft, Apple, Bloomberg, Palantir, Stripe and the
 trading firms (Jane Street, Optiver, IMC, Citadel, HRT, Jump, G-Research,
-XTX) either have no public job API or hire students through yearly
-programmes, so the radar tracks their **internship and graduate windows**
+XTX) hire students through annual programmes or rolling postings, so the radar tracks their **internship and graduate windows**
 (`src/eu_job_radar/data/windows.toml`) the way eu-phd-radar tracks ELLIS
 and IMPRS. Each opening and closing date carries a basis: *announced*
 (read on the official page, with the wording quoted), *reported by the
@@ -65,8 +72,8 @@ Requires Python 3.11+ and [uv](https://docs.astral.sh/uv/). No runtime
 dependencies.
 
 ```sh
-git clone https://github.com/Abdulla4akash/eu-job-radar.git
-cd eu-job-radar
+git clone https://github.com/Abdulla4akash/test.git
+cd test/eu-job-radar
 uv sync
 uv run job-radar --help
 uv tool install --force .   # optional: a `job-radar` command on your PATH
@@ -92,9 +99,10 @@ check and the commands for exploring the result.
 job-radar init                      # workspace in ~/.local/share/eu-job-radar/workspace
 $EDITOR ~/.local/share/eu-job-radar/workspace/preferences.toml
 job-radar validate
-job-radar boards                    # 34 company boards, with health after collection
+job-radar boards                    # 33 verified company boards, with collection health
 job-radar collect --all             # one request per board, plus robots.txt per API host
 job-radar inbox --view new          # first seen in the last 7 days
+job-radar inbox --view check        # unresolved role/location checks
 job-radar inbox --country DE --family ml --details
 job-radar show p-1a2b3c4
 job-radar promote p-1a2b3c4 --note "strong team"
@@ -147,7 +155,7 @@ command, so editing them changes the inbox without re-collecting.
   eu-phd-radar: only public https addresses on registered API hosts,
   robots.txt checked first, one request per second per API, an identifiable
   user-agent, a run request budget (`--budget`, default 80), bounded retries,
-  conditional requests and a 5 MB response limit. Every request is logged
+  conditional requests and a 20 MB board response limit (5 MB for page checks). Every request is logged
   (`job-radar runs N --requests`).
 - A job not seen in a **complete** read of its board is marked
   `no longer listed`; it is never deleted. A partial read, a failure or a
@@ -155,15 +163,18 @@ command, so editing them changes the inbox without re-collecting.
   keeps its status and the queue warns you.
 - Collection cannot write your applications, tasks or decisions: the
   database refuses it (an SQLite authorizer), and a test checks that.
-- The board tokens in `src/eu_job_radar/data/boards.toml` are **unverified**:
-  they were written without internet access. Your first `collect --all`
-  checks them; a wrong one shows as `not_found` in `job-radar boards`.
+- The **33 retained boards were verified on 2026-09-25**. Plaid and Mistral
+  moved to Ashby; DeepMind moved to Google Careers and was removed from ATS
+  collection. Verification is dated evidence; a future failure still shows
+  in `job-radar boards`. [Full validation and request ledger](docs/sources.md).
 
 ## Privacy
 
 The workspace (database, preferences, HTTP cache and exports) lives outside
-the repository. Nothing is uploaded anywhere. Job descriptions are not
-fetched; only titles, locations, links and a few labels are stored.
+the repository. Workspace content is never uploaded. Lever and Ashby bundle
+descriptions in their board responses; these can remain in the local HTTP
+cache for two days, but are discarded from normalized postings. Only titles,
+locations, links and a few labels are stored in the posting tables.
 
 ## Development
 

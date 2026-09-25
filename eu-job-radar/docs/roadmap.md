@@ -3,14 +3,14 @@
 ## Chunk 1 (done)
 
 - Greenhouse, Lever and Ashby adapters through eu-phd-radar's HTTP layer.
-- 34 shipped company boards (tokens unverified) and user-added boards.
+- 33 shipped company boards (verified 2026-09-25) and user-added boards.
 - Postings with snapshots and automated history; missing only after a
   complete read; collection barred from user-owned tables.
 - Rules-only screen (role family, level, countries, remote regions) from
   `preferences.toml`, with reasons.
 - Inbox views, promote / dismiss / later / undo, application queue with
   status, next step, tasks and notes; CSV/JSON export.
-- Offline demo with PASS/FAIL checks; 93 offline tests.
+- Offline demo with PASS/FAIL checks; 174 offline tests.
 
 ## Hiring windows (done)
 
@@ -20,16 +20,37 @@
   claim; schema v2 with a migration; `deadlines`, `windows-report`,
   `windows-track`, `windows-check` and `app-deadline`.
 
-## Chunk 2: first live validation
+## Chunk 2: first live validation (partially complete)
 
-Acceptance: in a validation workspace (`job-radar init --validation`), a
-`collect --all` within a stated budget; each shipped token confirmed or
-corrected; docs/sources.md updated with dated results, including the real
-response shapes and robots.txt of the three API hosts; screening
-false-positive and false-negative rates noted on the real titles and
-locations, with rule fixes. For windows: read each programme's official page, quote
-the opening and closing wording for the 2027 cycle, and upgrade claims to
-`current_cycle_announcement`, starting with Google's reported 7 October.
+Completed on **2026-09-25**, with [dated evidence and request accounting](sources.md):
+
+- Exactly one validation `collect --all --budget 80`: 37 requests. A targeted
+  correction run used 5 more; official-page/docs/robots research used 100.
+- All 33 retained boards verified. Plaid and Mistral moved to Ashby;
+  DeepMind's obsolete Greenhouse board was removed because its careers page
+  now directs candidates to Google Careers.
+- Live response shapes and all three API robots responses recorded. Revised
+  adapters replayed all 33 cached payloads successfully without new requests.
+- Large-board response failures fixed with a finite 20 MB collection bound;
+  malformed/duplicate inventory, nested database guard and window/CLI bugs
+  covered by offline synthetic regressions. Populated v1 migration checked.
+- All inbox views run on real data. Three 60-item title/location samples
+  reviewed, observed error proportions recorded and rules fixed.
+- Google deadline mismatch resolved: checked 2027 SWE/SRE postings say
+  **before 23 October 2026**, not 7 October; no time/timezone stated.
+  Booking.com Amsterdam SWE graduates **open 4 January 2027**.
+- All 22 programme pages checked or attempted, redirects corrected where
+  evidence was available; no exact date invented for an unknown window.
+- 174 offline tests, lint, formatting and 21/21 demo checks pass.
+
+**Still open:** complete official-page deadline coverage. Microsoft/Apple
+robots were unusable; Bloomberg's destination disallows automated access;
+Citadel, Citadel Securities, HRT and SAP refused access. Other programme
+pages give rolling/generic information, an older cycle or no exact 2027
+dates. These claims stay `not_yet_verified`. A manual owner-provided official
+announcement or a later permitted check can resolve them. Chunk 2 is not
+marked fully done while those original deadline acceptance checks remain
+unresolved. No repeated or scheduled collection was configured.
 
 ## Chunk 3: more sources
 
